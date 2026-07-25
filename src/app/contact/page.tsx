@@ -58,7 +58,7 @@ export default function ContactPage() {
                 Message the team directly with your travel dates and guest count.
               </p>
               <Button variant="whatsapp" className="mt-5" asChild>
-                <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={16} /> Chat on WhatsApp
                 </a>
               </Button>

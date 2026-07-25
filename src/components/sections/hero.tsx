@@ -58,7 +58,7 @@ export function Hero() {
             <Link href="/hotels"><Search size={18} /> Search Hotels</Link>
           </Button>
           <Button variant="whatsapp" size="lg" asChild>
-            <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
               <MessageCircle size={18} /> WhatsApp
             </a>
           </Button>

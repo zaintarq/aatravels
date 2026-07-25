@@ -85,7 +85,7 @@ export function PackageDetailClient() {
         <Button size="lg" asChild>
           <a
             href={whatsappLink(
-              process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447000000000",
+              process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447900007023",
               `Enquiry about ${pkg.title}`
             )}
             target="_blank"

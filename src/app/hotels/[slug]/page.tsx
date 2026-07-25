@@ -105,7 +105,7 @@ export default async function HotelDetailPage({ params }: HotelPageProps) {
                     <Button size="sm" variant="outline" asChild>
                       <a
                         href={whatsappLink(
-                          process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447000000000",
+                          process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447900007023",
                           `Enquiry about ${r.name} at ${hotel.name}`
                         )}
                         target="_blank"
@@ -168,7 +168,7 @@ export default async function HotelDetailPage({ params }: HotelPageProps) {
           <Button className="mt-5 w-full" asChild>
             <a
               href={whatsappLink(
-                process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447000000000",
+                process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447900007023",
                 `Enquiry about ${hotel.name}`
               )}
               target="_blank"

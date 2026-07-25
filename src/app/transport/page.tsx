@@ -53,7 +53,7 @@ export default function TransportPage() {
           </p>
           <div className="mt-9">
             <Button variant="whatsapp" size="lg" asChild>
-              <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
                 Ask on WhatsApp
               </a>
             </Button>

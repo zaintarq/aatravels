@@ -47,7 +47,7 @@ export function HotelCard({ hotel }: { hotel: HotelCardData }) {
             <Link href={`/hotels/${hotel.slug}`}>View Details</Link>
           </Button>
           <Button size="sm" variant="whatsapp" asChild>
-            <a href={`https://wa.me/447000000000?text=Enquiry about ${encodeURIComponent(hotel.name)}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://wa.me/447900007023?text=Enquiry about ${encodeURIComponent(hotel.name)}`} target="_blank" rel="noopener noreferrer">
               WhatsApp
             </a>
           </Button>

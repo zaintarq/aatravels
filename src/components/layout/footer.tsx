@@ -25,7 +25,7 @@ export function Footer() {
               <li><Link href="/services" className="hover:text-white">Services</Link></li>
               <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
               <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>
-              <li><a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a></li>
+              <li><a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a></li>
             </ul>
           </div>
           <div>

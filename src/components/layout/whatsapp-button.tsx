@@ -4,7 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/utils";
 
 export function WhatsAppButton() {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447000000000";
+  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447900007023";
   return (
     <a
       href={whatsappLink(number, "Assalamu Alaikum, I'd like to enquire about a hotel booking.")}

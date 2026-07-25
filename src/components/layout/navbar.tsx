@@ -85,7 +85,7 @@ export function Navbar() {
           )}
 
           <Button variant="whatsapp" size="sm" asChild>
-            <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
               WhatsApp
             </a>
           </Button>
