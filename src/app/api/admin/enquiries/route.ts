@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { COLLECTIONS, listDocuments } from "@/lib/firebase/firestore";
-import { updateEnquiryStatus } from "@/lib/firebase/data";
+import {
+  COLLECTIONS,
+  listDocuments,
+  updateEnquiryStatus,
+} from "@/lib/firebase/data";
 
 export const runtime = "edge";
 
