@@ -9,6 +9,7 @@ export const COLLECTIONS = {
   users: "users",
   usernames: "usernames",
   hotels: "hotels",
+  hotelListings: "hotelListings",
   packages: "packages",
   enquiries: "enquiries",
   contacts: "contacts",
@@ -16,6 +17,8 @@ export const COLLECTIONS = {
   reviews: "reviews",
   admins: "admins",
   testimonials: "testimonials",
+  newsletterSubscribers: "newsletterSubscribers",
+  mail: "mail",
 } as const;
 
 export async function createEnquiry(data: Record<string, unknown>) {

@@ -8,7 +8,7 @@ export const enquirySchema = z.object({
   email: z.string().email("Please enter a valid email"),
   checkIn: z.string().optional(),
   checkOut: z.string().optional(),
-  destination: z.enum(["MAKKAH", "MADINAH"]).optional(),
+  destination: z.enum(["MAKKAH", "MADINAH", "BOTH"]).optional(),
   hotelCategory: z.enum(["THREE", "FOUR", "FIVE", "LUXURY_SUITE"]).optional(),
   budget: z.string().optional(),
   adults: z.coerce.number().min(1).default(1),

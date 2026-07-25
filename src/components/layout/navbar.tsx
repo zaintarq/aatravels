@@ -79,14 +79,9 @@ export function Navbar() {
               </Button>
             </>
           ) : (
-            <>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/login">Sign in</Link>
-              </Button>
-              <Button variant="primary" size="sm" asChild>
-                <Link href="/register">Register</Link>
-              </Button>
-            </>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/login">Sign in</Link>
+            </Button>
           )}
 
           <Button variant="whatsapp" size="sm" asChild>
@@ -141,18 +136,11 @@ export function Navbar() {
                   </Button>
                 </>
               ) : (
-                <div className="flex gap-3">
-                  <Button variant="outline" size="sm" asChild className="flex-1">
-                    <Link href="/login" onClick={() => setOpen(false)}>
-                      Sign in
-                    </Link>
-                  </Button>
-                  <Button variant="primary" size="sm" asChild className="flex-1">
-                    <Link href="/register" onClick={() => setOpen(false)}>
-                      Register
-                    </Link>
-                  </Button>
-                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/login" onClick={() => setOpen(false)}>
+                    Sign in
+                  </Link>
+                </Button>
               )}
             </div>
           </div>

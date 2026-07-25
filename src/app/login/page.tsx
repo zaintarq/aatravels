@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -126,10 +125,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-400 dark:text-white/60">
-          New here?{" "}
-          <Link href="/register" className="font-medium text-maroon-500 hover:text-maroon-600 dark:text-maroon-300">
-            Create an account
-          </Link>
+          Staff access uses the same login — set <code className="text-xs">isAdmin</code> in Firestore.
         </p>
       </div>
     </div>

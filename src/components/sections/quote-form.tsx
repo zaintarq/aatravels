@@ -105,6 +105,7 @@ export function QuoteForm() {
               <option value="">Select destination</option>
               <option value="MAKKAH">Makkah</option>
               <option value="MADINAH">Madinah</option>
+              <option value="BOTH">Both Makkah & Madinah</option>
             </Select>
           </div>
           <div>

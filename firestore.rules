@@ -5,9 +5,18 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == 'yes'
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == 'true'
+        );
+    }
+
     match /users/{uid} {
       allow read: if isSelf(uid);
-      // New users always start as non-admin. Only Console/Admin SDK can flip isAdmin.
       allow create: if isSelf(uid)
         && request.resource.data.username is string
         && request.resource.data.isAdmin == false;
@@ -43,6 +52,27 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.resource.data.firebaseUid == request.auth.uid;
       allow update, delete: if false;
+    }
+
+    match /hotelListings/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /packages/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /newsletterSubscribers/{id} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Used by Firebase Extension: "Trigger Email from Firestore"
+    match /mail/{id} {
+      allow create: if true;
+      allow read, update, delete: if false;
     }
 
     match /testimonials/{id} {
