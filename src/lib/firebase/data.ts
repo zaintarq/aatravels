@@ -1,15 +1,33 @@
-import { addDocument, COLLECTIONS, getDocument, listDocuments, updateDocument } from "@/lib/firebase/firestore";
+import {
+  restAddDocument,
+  restGetDocument,
+  restListDocuments,
+  restUpdateDocument,
+} from "@/lib/firebase/firestore-rest";
+
+export const COLLECTIONS = {
+  users: "users",
+  usernames: "usernames",
+  hotels: "hotels",
+  packages: "packages",
+  enquiries: "enquiries",
+  contacts: "contacts",
+  travelAgents: "travelAgents",
+  reviews: "reviews",
+  admins: "admins",
+  testimonials: "testimonials",
+} as const;
 
 export async function createEnquiry(data: Record<string, unknown>) {
-  return addDocument(COLLECTIONS.enquiries, { ...data, status: "NEW" });
+  return restAddDocument(COLLECTIONS.enquiries, { ...data, status: "NEW" });
 }
 
 export async function createContact(data: Record<string, unknown>) {
-  return addDocument(COLLECTIONS.contacts, data);
+  return restAddDocument(COLLECTIONS.contacts, data);
 }
 
 export async function createTravelAgent(data: Record<string, unknown>) {
-  return addDocument(COLLECTIONS.travelAgents, { ...data, status: "PENDING" });
+  return restAddDocument(COLLECTIONS.travelAgents, { ...data, status: "PENDING" });
 }
 
 export async function createReview(data: {
@@ -20,7 +38,7 @@ export async function createReview(data: {
   rating: number;
   comment: string;
 }) {
-  return addDocument(COLLECTIONS.reviews, {
+  return restAddDocument(COLLECTIONS.reviews, {
     ...data,
     approved: true,
   });
@@ -28,29 +46,35 @@ export async function createReview(data: {
 
 export async function getApprovedReviews(hotelId: string) {
   try {
-    return await listDocuments<{
+    const rows = await restListDocuments(COLLECTIONS.reviews, {
+      field: "hotelId",
+      value: hotelId,
+      orderBy: "createdAt",
+      orderDir: "DESCENDING",
+    });
+    return rows.filter((r) => r.approved !== false) as Array<{
+      id: string;
       hotelId: string;
       authorName: string;
       rating: number;
       comment: string;
       approved: boolean;
       createdAt: string;
-    }>(COLLECTIONS.reviews, {
-      where: ["hotelId", "==", hotelId],
-      orderBy: ["createdAt", "desc"],
-    });
+    }>;
   } catch {
-    const all = await listDocuments<{
+    const rows = await restListDocuments(COLLECTIONS.reviews, {
+      field: "hotelId",
+      value: hotelId,
+    });
+    return (rows as Array<{
+      id: string;
       hotelId: string;
       authorName: string;
       rating: number;
       comment: string;
       approved: boolean;
       createdAt: string;
-    }>(COLLECTIONS.reviews, {
-      where: ["hotelId", "==", hotelId],
-    });
-    return all
+    }>)
       .filter((r) => r.approved !== false)
       .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
   }
@@ -58,12 +82,13 @@ export async function getApprovedReviews(hotelId: string) {
 
 export async function getRecentEnquiries(take = 8) {
   try {
-    return await listDocuments(COLLECTIONS.enquiries, {
-      orderBy: ["createdAt", "desc"],
+    return await restListDocuments(COLLECTIONS.enquiries, {
+      orderBy: "createdAt",
+      orderDir: "DESCENDING",
       limit: take,
     });
   } catch {
-    const all = await listDocuments(COLLECTIONS.enquiries);
+    const all = await restListDocuments(COLLECTIONS.enquiries, { limit: 100 });
     return all
       .sort((a: any, b: any) => String(b.createdAt).localeCompare(String(a.createdAt)))
       .slice(0, take);
@@ -73,9 +98,12 @@ export async function getRecentEnquiries(take = 8) {
 export async function countCollection(name: string, field?: string, value?: unknown) {
   try {
     const docs =
-      field && value !== undefined
-        ? await listDocuments(name, { where: [field, "==", value] })
-        : await listDocuments(name);
+      field !== undefined
+        ? await restListDocuments(name, {
+            field,
+            value: value as string | number | boolean,
+          })
+        : await restListDocuments(name);
     return docs.length;
   } catch {
     return 0;
@@ -83,13 +111,32 @@ export async function countCollection(name: string, field?: string, value?: unkn
 }
 
 export async function updateEnquiryStatus(id: string, status: string) {
-  await updateDocument(COLLECTIONS.enquiries, id, { status });
+  await restUpdateDocument(COLLECTIONS.enquiries, id, { status });
 }
 
 export async function updateAgentStatus(id: string, status: string) {
-  await updateDocument(COLLECTIONS.travelAgents, id, { status });
+  await restUpdateDocument(COLLECTIONS.travelAgents, id, { status });
 }
 
 export async function getUserProfile(uid: string) {
-  return getDocument<{ username: string; email: string; isAdmin?: boolean | string }>(COLLECTIONS.users, uid);
+  return restGetDocument(COLLECTIONS.users, uid) as Promise<{
+    id: string;
+    username: string;
+    email: string;
+    isAdmin?: boolean | string;
+  } | null>;
+}
+
+export async function listDocuments(collectionName: string, opts?: {
+  where?: [string, string, unknown];
+  orderBy?: [string, "asc" | "desc"];
+  limit?: number;
+}) {
+  return restListDocuments(collectionName, {
+    field: opts?.where?.[0],
+    value: opts?.where?.[2] as string | number | boolean | undefined,
+    orderBy: opts?.orderBy?.[0],
+    orderDir: opts?.orderBy?.[1] === "asc" ? "ASCENDING" : "DESCENDING",
+    limit: opts?.limit,
+  });
 }
