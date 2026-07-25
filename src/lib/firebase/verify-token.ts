@@ -1,3 +1,5 @@
+import { firebasePublicConfig } from "@/lib/firebase/public-config";
+
 export type VerifiedFirebaseUser = {
   uid: string;
   email: string;
@@ -5,7 +7,7 @@ export type VerifiedFirebaseUser = {
 
 /** Verify a Firebase ID token via Identity Toolkit (no Admin SDK required). */
 export async function verifyFirebaseIdToken(idToken: string): Promise<VerifiedFirebaseUser | null> {
-  const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  const apiKey = firebasePublicConfig.apiKey;
   if (!apiKey || !idToken) return null;
 
   const res = await fetch(

@@ -1,4 +1,5 @@
 import { verifyFirebaseIdToken } from "@/lib/firebase/verify-token";
+import { firebasePublicConfig } from "@/lib/firebase/public-config";
 
 export type FirestoreUserProfile = {
   uid: string;
@@ -25,7 +26,7 @@ export async function getUserProfileWithToken(
   uid: string,
   idToken: string
 ): Promise<FirestoreUserProfile | null> {
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const projectId = firebasePublicConfig.projectId;
   if (!projectId) return null;
 
   const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${uid}`;

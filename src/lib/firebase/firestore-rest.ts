@@ -2,7 +2,9 @@
  * Edge-safe Firestore access via REST (Firebase JS client hangs on Cloudflare Workers).
  */
 
-const projectId = () => process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "";
+import { firebasePublicConfig } from "@/lib/firebase/public-config";
+
+const projectId = () => firebasePublicConfig.projectId;
 
 function baseUrl() {
   return `https://firestore.googleapis.com/v1/projects/${projectId()}/databases/(default)/documents`;
