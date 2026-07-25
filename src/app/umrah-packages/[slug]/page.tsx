@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { whatsappLink } from "@/lib/utils";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
-
-async function getPackage(slug: string) {
-  try {
-    return await prisma.package.findUnique({ where: { slug } });
-  } catch {
-    return null;
-  }
-}
+import { getPackageBySlug } from "@/data/packages";
 
 type PackagePageProps = {
   params: Promise<{ slug: string }>;
@@ -19,14 +11,14 @@ type PackagePageProps = {
 
 export async function generateMetadata({ params }: PackagePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const pkg = await getPackage(slug);
+  const pkg = getPackageBySlug(slug);
   if (!pkg) return { title: "Package Not Found" };
   return { title: pkg.metaTitle || pkg.title, description: pkg.metaDescription || pkg.summary };
 }
 
 export default async function PackageDetailPage({ params }: PackagePageProps) {
   const { slug } = await params;
-  const pkg = await getPackage(slug);
+  const pkg = getPackageBySlug(slug);
   if (!pkg) notFound();
 
   return (
@@ -49,11 +41,23 @@ export default async function PackageDetailPage({ params }: PackagePageProps) {
         )}
       </div>
 
-      <Button size="lg" className="mt-10" asChild>
-        <a href={whatsappLink(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447000000000", `Enquiry about ${pkg.title}`)} target="_blank" rel="noopener noreferrer">
-          Enquire on WhatsApp
-        </a>
-      </Button>
+      <div className="mt-10 flex flex-wrap gap-3">
+        <Button size="lg" asChild>
+          <a
+            href={whatsappLink(
+              process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "447000000000",
+              `Enquiry about ${pkg.title}`
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Enquire on WhatsApp
+          </a>
+        </Button>
+        <Button size="lg" variant="outline" asChild>
+          <a href="/contact">Request a Quote</a>
+        </Button>
+      </div>
     </div>
   );
 }

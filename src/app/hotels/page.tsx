@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
 import { HotelCard } from "@/components/sections/hotel-card";
 import { StarDivider } from "@/components/ui/star-divider";
+import { getAllHotels } from "@/data/hotels";
 
 export const metadata: Metadata = {
   title: "Hotels in Makkah & Madinah",
@@ -156,18 +156,7 @@ const hotelSelectionLists = {
 };
 
 export default async function HotelsPage() {
-  let hotels: any[] = [];
-  try {
-    hotels = await prisma.hotel.findMany({
-      where: {
-        active: true,
-      },
-      include: { images: { orderBy: { position: "asc" }, take: 1 } },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-    });
-  } catch {
-    hotels = [];
-  }
+  const hotels = getAllHotels();
 
   const makkahHotels = hotels.filter((hotel) => hotel.city === "MAKKAH");
   const madinahHotels = hotels.filter((hotel) => hotel.city === "MADINAH");
@@ -181,7 +170,7 @@ export default async function HotelsPage() {
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">AA Group Travels hotels</p>
         <h1 className="mt-3 font-display text-4xl font-semibold text-ink-900 dark:text-white">Hotels in Makkah &amp; Madinah</h1>
-        <p className="mt-4 text-sm leading-relaxed text-ink-500 dark:text-white/60">
+        <p className="mt-4 text-sm leading-relaxed text-ink-400 dark:text-white/60">
           Browse hotel options for your Umrah journey.
         </p>
         <StarDivider />
@@ -194,13 +183,13 @@ export default async function HotelsPage() {
         </div>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {(["MAKKAH", "MADINAH"] as const).map((cityKey) => (
-            <div key={cityKey} className="rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-white/5">
+            <div key={cityKey} className="rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-800">
               <h3 className="font-display text-xl font-semibold text-ink-900 dark:text-white">{cityDetails[cityKey].title}</h3>
               <div className="mt-4 space-y-5">
                 {hotelSelectionLists[cityKey].map((category) => (
                   <section key={category.title}>
                     <h4 className="text-sm font-semibold text-maroon-500 dark:text-gold-500">{category.title}</h4>
-                    <ul className="mt-2 space-y-1 text-sm text-ink-600 dark:text-white/75">
+                    <ul className="mt-2 space-y-1 text-sm text-ink-700 dark:text-white/75">
                       {category.hotels.map((hotel, index) => (
                         <li key={`${category.title}-${hotel}-${index}`}>{hotel}</li>
                       ))}
@@ -213,37 +202,38 @@ export default async function HotelsPage() {
         </div>
       </section>
 
-      {hotels.length > 0 ? (
-        <div className="mt-16 space-y-20">
-          {citySections.map((section) => (
-            <section key={section.key} id={section.key.toLowerCase()}>
-              <div className="mb-8 max-w-3xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-500">{section.eyebrow}</p>
-                <h2 className="mt-2 font-display text-3xl font-semibold text-ink-900 dark:text-white">{section.title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-ink-500 dark:text-white/60">{section.description}</p>
+      <div className="mt-16 space-y-20">
+        {citySections.map((section) => (
+          <section key={section.key} id={section.key.toLowerCase()}>
+            <div className="mb-8 max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-500">{section.eyebrow}</p>
+              <h2 className="mt-2 font-display text-3xl font-semibold text-ink-900 dark:text-white">{section.title}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-ink-400 dark:text-white/60">{section.description}</p>
+            </div>
+            {section.hotels.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {section.hotels.map((h) => (
+                  <HotelCard
+                    key={h.id}
+                    hotel={{
+                      slug: h.slug,
+                      name: h.name,
+                      city: h.city,
+                      star: h.star,
+                      distanceMeters: h.distanceMeters,
+                      imageUrl: h.images?.[0]?.url,
+                    }}
+                  />
+                ))}
               </div>
-              {section.hotels.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {section.hotels.map((h) => (
-                    <HotelCard
-                      key={h.id}
-                      hotel={{ slug: h.slug, name: h.name, city: h.city, star: h.star, distanceMeters: h.distanceMeters, imageUrl: h.images?.[0]?.url }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-lg border border-dashed border-ink-900/15 bg-white p-8 text-sm text-ink-400 dark:border-white/15 dark:bg-white/5 dark:text-white/50">
-                  No {section.title.toLowerCase()} are available yet.
-                </div>
-              )}
-            </section>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-14 text-center text-sm text-ink-400 dark:text-white/50">
-          No hotels found. Connect a database and run <code>npm run seed</code> to populate this page.
-        </p>
-      )}
+            ) : (
+              <div className="rounded-lg border border-dashed border-ink-900/15 bg-cream p-8 text-sm text-ink-400 dark:border-white/15 dark:bg-ink-800 dark:text-white/50">
+                No {section.title.toLowerCase()} are available yet.
+              </div>
+            )}
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

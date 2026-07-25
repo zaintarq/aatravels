@@ -3,12 +3,29 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --surface: #ffffff;
+    --surface-muted: #f6f4f5;
+    --foreground: #111114;
+    --muted: #54545f;
+  }
+
+  .dark {
+    --surface: #111114;
+    --surface-muted: #18181c;
+    --foreground: #ffffff;
+    --muted: #a1a1aa;
+  }
+
   html {
     scroll-behavior: smooth;
   }
+
   body {
-    @apply bg-white text-ink-900 dark:bg-ink-900 dark:text-white;
+    background-color: var(--surface);
+    color: var(--foreground);
   }
+
   :focus-visible {
     @apply outline-none ring-2 ring-maroon-400 ring-offset-2;
   }

@@ -7,16 +7,16 @@ import { MessageCircle, Search, Car } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-[92vh] items-center overflow-hidden bg-ink-900">
+    <section className="relative flex min-h-[88vh] items-center overflow-hidden bg-ink-900">
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-50"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=2400&auto=format&fit=crop')",
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/70 to-ink-900/30" />
-      <div className="absolute inset-0 bg-star-pattern bg-repeat opacity-[0.08]" />
+      <div className="absolute inset-0 bg-ink-900/75" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/50 to-transparent" />
 
       <div className="relative mx-auto max-w-5xl px-4 py-32 text-center sm:px-6 lg:px-8">
         <motion.p
@@ -25,7 +25,7 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-maroon-200"
         >
-          AA Group Travels &middot; Makkah &amp; Madinah
+          AA Travel Group &middot; Makkah &amp; Madinah
         </motion.p>
 
         <motion.h1
@@ -41,7 +41,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mx-auto mt-6 max-w-2xl text-base text-white/70 sm:text-lg"
+          className="mx-auto mt-6 max-w-2xl text-base text-white/75 sm:text-lg"
         >
           Comfortable hotel options in Makkah and Madinah, with reliable transport for families and groups.
         </motion.p>

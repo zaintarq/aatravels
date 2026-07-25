@@ -1,34 +1,43 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { AuthProvider } from "@/components/auth/auth-provider";
 
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", weight: ["400", "500", "600", "700"] });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const display = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+});
+const body = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.aatravelgroup.co.uk";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "AA Group Travels | Umrah Hotels & Travel Services",
-    template: "%s | AA Group Travels",
+    default: "AA Travel Group | Umrah Hotels & Travel Services",
+    template: "%s | AA Travel Group",
   },
   description:
-    "AA Group Travels provides hotel stays and transport services in Makkah & Madinah for pilgrims, families and groups.",
+    "AA Travel Group provides hotel stays and transport services in Makkah & Madinah for pilgrims, families and groups.",
   openGraph: {
     type: "website",
-    siteName: "AA Group Travels",
-    title: "AA Group Travels | Umrah Hotels & Travel Services",
+    siteName: "AA Travel Group",
+    title: "AA Travel Group | Umrah Hotels & Travel Services",
     description: "Hotels and transport in Makkah & Madinah for Umrah journeys.",
     url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
-    title: "AA Group Travels",
+    title: "AA Travel Group",
     description: "Hotels and transport in Makkah & Madinah.",
   },
   robots: { index: true, follow: true },
@@ -37,12 +46,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fraunces.variable} ${inter.variable} font-body antialiased`}>
+      <body className={`${display.variable} ${body.variable} font-body antialiased`}>
         <ThemeProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-          <WhatsAppButton />
+          <AuthProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+            <WhatsAppButton />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

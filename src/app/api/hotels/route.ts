@@ -1,20 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import { getAllHotels } from "@/data/hotels";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const city = searchParams.get("city") || undefined;
-  const star = searchParams.get("star") || undefined;
-
-  const hotels = await prisma.hotel.findMany({
-    where: {
-      active: true,
-      city: city ? (city as any) : undefined,
-      star: star ? (star as any) : undefined,
-    },
-    include: { images: { orderBy: { position: "asc" }, take: 1 } },
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-  });
-
+  const city = searchParams.get("city");
+  let hotels = getAllHotels();
+  if (city) hotels = hotels.filter((h) => h.city === city);
   return NextResponse.json({ hotels });
 }

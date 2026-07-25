@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { enquirySchema } from "@/lib/validations";
 import { sendEnquiryEmails } from "@/lib/mailer";
+import { createEnquiry } from "@/lib/firebase/data";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,27 +16,23 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
-
-    const enquiry = await prisma.enquiry.create({
-      data: {
-        fullName: data.fullName,
-        country: data.country,
-        agencyName: data.agencyName,
-        whatsapp: data.whatsapp,
-        email: data.email,
-        checkIn: data.checkIn ? new Date(data.checkIn) : undefined,
-        checkOut: data.checkOut ? new Date(data.checkOut) : undefined,
-        destination: data.destination,
-        hotelCategory: data.hotelCategory,
-        budget: data.budget,
-        adults: data.adults,
-        children: data.children,
-        rooms: data.rooms,
-        message: data.message,
-      },
+    const id = await createEnquiry({
+      fullName: data.fullName,
+      country: data.country,
+      agencyName: data.agencyName || null,
+      whatsapp: data.whatsapp,
+      email: data.email,
+      checkIn: data.checkIn || null,
+      checkOut: data.checkOut || null,
+      destination: data.destination || null,
+      hotelCategory: data.hotelCategory || null,
+      budget: data.budget || null,
+      adults: data.adults,
+      children: data.children,
+      rooms: data.rooms,
+      message: data.message || null,
     });
 
-    // Fire-and-forget email notifications; do not block the response on SMTP.
     sendEnquiryEmails({
       fullName: data.fullName,
       email: data.email,
@@ -48,15 +44,16 @@ export async function POST(req: NextRequest) {
       message: data.message,
     }).catch((err) => console.error("Email send failed:", err));
 
-    return NextResponse.json({ success: true, id: enquiry.id }, { status: 201 });
+    return NextResponse.json({ success: true, id }, { status: 201 });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
 
-export async function GET(req: NextRequest) {
-  // Admin-only listing; real auth check happens in middleware.ts for /api/admin/*.
-  // Kept here read-only and unauthenticated-safe: returns nothing sensitive by default.
-  return NextResponse.json({ error: "Use /api/admin/enquiries with an admin session" }, { status: 403 });
+export async function GET() {
+  return NextResponse.json(
+    { error: "Use /api/admin/enquiries with an admin session" },
+    { status: 403 }
+  );
 }

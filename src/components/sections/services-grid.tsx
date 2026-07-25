@@ -12,7 +12,7 @@ const services = [
 
 export function ServicesGrid() {
   return (
-    <section className="bg-cream py-24 dark:bg-ink-900">
+    <section className="bg-cream py-24 dark:bg-ink-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">What we offer</p>
@@ -26,9 +26,9 @@ export function ServicesGrid() {
           {services.map((s) => (
             <div
               key={s.title}
-              className="group rounded-2xl border border-ink-900/10 bg-white p-8 transition-shadow hover:shadow-xl hover:shadow-maroon-500/5 dark:border-white/10 dark:bg-white/5"
+              className="group rounded-2xl border border-ink-900/10 bg-white p-8 transition-shadow hover:shadow-lg hover:shadow-maroon-500/5 dark:border-white/10 dark:bg-ink-900"
             >
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-500/10 text-maroon-500 group-hover:bg-maroon-500 group-hover:text-white transition-colors">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-500/10 text-maroon-500 transition-colors group-hover:bg-maroon-500 group-hover:text-white">
                 <s.icon size={22} />
               </div>
               <h3 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{s.title}</h3>

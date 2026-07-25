@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
       if (isAdminApi) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
-      const loginUrl = new URL("/admin/login", req.url);
+      const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("next", pathname);
       return NextResponse.redirect(loginUrl);
     }

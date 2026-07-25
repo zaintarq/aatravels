@@ -1,26 +1,31 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { COLLECTIONS } from "@/lib/firebase/firestore";
+import { countCollection, getRecentEnquiries } from "@/lib/firebase/data";
+import { getAllHotels } from "@/data/hotels";
+import { getAllPackages } from "@/data/packages";
 
 async function getCounts() {
   try {
-    const [hotels, enquiries, agents, packages, testimonials] = await Promise.all([
-      prisma.hotel.count(),
-      prisma.enquiry.count({ where: { status: "NEW" } }),
-      prisma.travelAgent.count({ where: { status: "PENDING" } }),
-      prisma.package.count(),
-      prisma.testimonial.count({ where: { approved: false } }),
+    const [enquiries, agents, testimonials] = await Promise.all([
+      countCollection(COLLECTIONS.enquiries, "status", "NEW"),
+      countCollection(COLLECTIONS.travelAgents, "status", "PENDING"),
+      countCollection(COLLECTIONS.testimonials, "approved", false),
     ]);
-    return { hotels, enquiries, agents, packages, testimonials };
+    return {
+      hotels: getAllHotels().length,
+      enquiries,
+      agents,
+      packages: getAllPackages().length,
+      testimonials,
+    };
   } catch {
-    return { hotels: 0, enquiries: 0, agents: 0, packages: 0, testimonials: 0 };
-  }
-}
-
-async function getRecentEnquiries() {
-  try {
-    return await prisma.enquiry.findMany({ orderBy: { createdAt: "desc" }, take: 8 });
-  } catch {
-    return [];
+    return {
+      hotels: getAllHotels().length,
+      enquiries: 0,
+      agents: 0,
+      packages: getAllPackages().length,
+      testimonials: 0,
+    };
   }
 }
 
@@ -34,7 +39,7 @@ const cards = [
 
 export default async function AdminDashboardPage() {
   const counts = await getCounts();
-  const recent = await getRecentEnquiries();
+  const recent = await getRecentEnquiries(8).catch(() => []);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -55,7 +60,7 @@ export default async function AdminDashboardPage() {
           <Link
             key={c.key}
             href={c.href}
-            className="rounded-2xl border border-ink-900/10 bg-white p-5 hover:shadow-md dark:border-white/10 dark:bg-white/5"
+            className="rounded-2xl border border-ink-900/10 bg-white p-5 hover:shadow-md dark:border-white/10 dark:bg-ink-800"
           >
             <p className="font-display text-3xl font-semibold text-maroon-500">{counts[c.key as keyof typeof counts]}</p>
             <p className="mt-1 text-xs font-medium uppercase tracking-wide text-ink-400 dark:text-white/50">{c.label}</p>
@@ -90,7 +95,7 @@ export default async function AdminDashboardPage() {
                     <td className="px-4 py-3">{e.email}</td>
                     <td className="px-4 py-3">{e.destination ?? "-"}</td>
                     <td className="px-4 py-3">{e.status}</td>
-                    <td className="px-4 py-3">{new Date(e.createdAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3">{e.createdAt ? new Date(e.createdAt).toLocaleDateString() : "-"}</td>
                   </tr>
                 ))
               )}
@@ -98,12 +103,6 @@ export default async function AdminDashboardPage() {
           </table>
         </div>
       </div>
-
-      <p className="mt-8 text-xs text-ink-400 dark:text-white/40">
-        This overview reads live from the database. Full CRUD screens for hotels, packages,
-        testimonials and travel agents follow the same pattern as <code>/api/admin/hotels</code> — see the README
-        for how to extend each section.
-      </p>
     </div>
   );
 }

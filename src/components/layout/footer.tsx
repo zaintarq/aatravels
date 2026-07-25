@@ -9,11 +9,11 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <Image
-              src="/images/aa-group-travels-logo.jpeg"
-              alt="AA Group Travels"
+              src="/images/aa-travel-group-logo.png"
+              alt="AA Travel Group"
               width={180}
-              height={100}
-              className="h-20 w-auto rounded-sm bg-white object-contain p-2"
+              height={180}
+              className="h-20 w-auto object-contain"
             />
             <p className="mt-3 text-sm text-white/60">
               Hotel stays and transport services in Makkah &amp; Madinah for families and groups.
@@ -23,6 +23,7 @@ export function Footer() {
             <h4 className="mb-3 text-xs font-semibold uppercase tracking-widest text-gold-400">Company</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/services" className="hover:text-white">Services</Link></li>
+              <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
               <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>
               <li><a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a></li>
             </ul>

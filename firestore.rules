@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSelf(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read: if isSelf(uid);
+      // New users always start as non-admin. Only Console/Admin SDK can flip isAdmin.
+      allow create: if isSelf(uid)
+        && request.resource.data.username is string
+        && request.resource.data.isAdmin == false;
+      allow update: if isSelf(uid)
+        && request.resource.data.isAdmin == resource.data.isAdmin;
+    }
+
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && !exists(/databases/$(database)/documents/usernames/$(username));
+      allow update, delete: if false;
+    }
+
+    match /enquiries/{id} {
+      allow create: if true;
+      allow read, update: if false;
+    }
+
+    match /contacts/{id} {
+      allow create: if true;
+      allow read, update: if false;
+    }
+
+    match /travelAgents/{id} {
+      allow create: if true;
+      allow read, update: if false;
+    }
+
+    match /reviews/{id} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.firebaseUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /testimonials/{id} {
+      allow read: if resource.data.approved == true;
+      allow write: if false;
+    }
+  }
+}

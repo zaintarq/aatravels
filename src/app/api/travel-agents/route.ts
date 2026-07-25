@@ -1,20 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 import { travelAgentSchema } from "@/lib/validations";
+import { createTravelAgent } from "@/lib/firebase/data";
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const parsed = travelAgentSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid input", issues: parsed.error.flatten() }, { status: 400 });
-  }
+export async function POST(req: Request) {
   try {
-    const agent = await prisma.travelAgent.create({ data: parsed.data });
-    return NextResponse.json({ success: true, id: agent.id }, { status: 201 });
-  } catch (err: any) {
-    if (err?.code === "P2002") {
-      return NextResponse.json({ error: "An application with this email already exists" }, { status: 409 });
+    const body = await req.json();
+    const parsed = travelAgentSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
+
+    const id = await createTravelAgent(parsed.data);
+    return NextResponse.json({ success: true, id }, { status: 201 });
+  } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }

@@ -1,13 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import { COLLECTIONS, listDocuments } from "@/lib/firebase/firestore";
+import { updateAgentStatus } from "@/lib/firebase/data";
 
 export async function GET() {
-  const agents = await prisma.travelAgent.findMany({ orderBy: { createdAt: "desc" }, take: 100 });
-  return NextResponse.json({ agents });
+  try {
+    const agents = await listDocuments(COLLECTIONS.travelAgents, {
+      orderBy: ["createdAt", "desc"],
+      limit: 100,
+    });
+    return NextResponse.json({ agents });
+  } catch {
+    const agents = await listDocuments(COLLECTIONS.travelAgents);
+    return NextResponse.json({ agents });
+  }
 }
 
-export async function PATCH(req: NextRequest) {
+export async function PATCH(req: Request) {
   const { id, status } = await req.json();
-  const agent = await prisma.travelAgent.update({ where: { id }, data: { status } });
-  return NextResponse.json({ agent });
+  if (!id || !status) {
+    return NextResponse.json({ error: "id and status required" }, { status: 400 });
+  }
+  await updateAgentStatus(id, status);
+  return NextResponse.json({ success: true });
 }

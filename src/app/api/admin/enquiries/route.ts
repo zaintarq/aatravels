@@ -1,14 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+import { COLLECTIONS, listDocuments } from "@/lib/firebase/firestore";
+import { updateEnquiryStatus } from "@/lib/firebase/data";
 
-// Auth is already enforced by middleware.ts for every /api/admin/* route.
 export async function GET() {
-  const enquiries = await prisma.enquiry.findMany({ orderBy: { createdAt: "desc" }, take: 100 });
-  return NextResponse.json({ enquiries });
+  try {
+    const enquiries = await listDocuments(COLLECTIONS.enquiries, {
+      orderBy: ["createdAt", "desc"],
+      limit: 100,
+    });
+    return NextResponse.json({ enquiries });
+  } catch {
+    const enquiries = await listDocuments(COLLECTIONS.enquiries);
+    return NextResponse.json({ enquiries });
+  }
 }
 
-export async function PATCH(req: NextRequest) {
+export async function PATCH(req: Request) {
   const { id, status } = await req.json();
-  const enquiry = await prisma.enquiry.update({ where: { id }, data: { status } });
-  return NextResponse.json({ enquiry });
+  if (!id || !status) {
+    return NextResponse.json({ error: "id and status required" }, { status: 400 });
+  }
+  await updateEnquiryStatus(id, status);
+  return NextResponse.json({ success: true });
 }

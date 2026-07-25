@@ -22,7 +22,7 @@ export interface HotelCardData {
 
 export function HotelCard({ hotel }: { hotel: HotelCardData }) {
   return (
-    <div className="group overflow-hidden rounded-2xl border border-ink-900/10 bg-white transition-shadow hover:shadow-xl dark:border-white/10 dark:bg-white/5">
+    <div className="group overflow-hidden rounded-2xl border border-ink-900/10 bg-white transition-shadow hover:shadow-lg dark:border-white/10 dark:bg-ink-800">
       <div className="relative h-56 w-full overflow-hidden">
         <Image
           src={hotel.imageUrl || "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=1200&auto=format&fit=crop"}

@@ -61,14 +61,14 @@ export default function TransportPage() {
         </div>
       </section>
 
-      <section className="bg-cream py-24 dark:bg-ink-900">
+      <section className="bg-cream py-24 dark:bg-ink-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">Transport services</p>
             <h2 className="mt-3 font-display text-3xl font-semibold text-ink-900 dark:text-white sm:text-4xl">
               Travel support arranged around your journey
             </h2>
-            <p className="mt-4 text-sm leading-relaxed text-ink-500 dark:text-white/60">
+            <p className="mt-4 text-sm leading-relaxed text-ink-400 dark:text-white/60">
               Transport is arranged according to route, vehicle type, passenger count and timing.
             </p>
             <StarDivider />
@@ -78,9 +78,9 @@ export default function TransportPage() {
             {transportServices.map((service) => (
               <div
                 key={service.title}
-                className="rounded-lg border border-ink-900/10 bg-white p-8 dark:border-white/10 dark:bg-white/5"
+                className="rounded-2xl border border-ink-900/10 bg-white p-8 dark:border-white/10 dark:bg-ink-900"
               >
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-maroon-500/10 text-maroon-500">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-500/10 text-maroon-500">
                   <service.icon size={22} />
                 </div>
                 <h3 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{service.title}</h3>

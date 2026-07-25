@@ -4,9 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, Moon, Sun } from "lucide-react";
+import { Menu, X, Moon, Sun, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/layout/theme-provider";
+import { useAuth } from "@/components/auth/auth-provider";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -15,24 +16,26 @@ const links = [
   { href: "/transport", label: "Transport" },
   { href: "/umrah-packages", label: "Umrah Packages" },
   { href: "/services", label: "Services" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { user, loading, signOut } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink-900/10 bg-cream/90 backdrop-blur dark:border-white/10 dark:bg-ink-900/90">
+    <header className="sticky top-0 z-50 border-b border-ink-900/10 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-ink-900/95">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
           <Image
-            src="/images/aa-group-travels-logo.jpeg"
-            alt="AA Group Travels"
+            src="/images/aa-travel-group-logo.png"
+            alt="AA Travel Group"
             width={160}
-            height={90}
+            height={160}
             priority
-            className="h-14 w-auto rounded-sm object-contain"
+            className="h-14 w-auto object-contain"
           />
         </Link>
 
@@ -59,11 +62,37 @@ export function Navbar() {
           >
             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/admin/login">Login</Link>
-          </Button>
-          <Button variant="primary" size="sm" asChild>
-            <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+
+          {!loading && user ? (
+            <>
+              <span className="flex items-center gap-1.5 text-sm text-ink-700 dark:text-white/80">
+                <User size={16} className="text-maroon-500" />
+                @{user.username}
+              </span>
+              {user.isAdmin && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/admin/dashboard">Dashboard</Link>
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={() => signOut()}>
+                <LogOut size={14} /> Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button variant="primary" size="sm" asChild>
+                <Link href="/register">Register</Link>
+              </Button>
+            </>
+          )}
+
+          <Button variant="whatsapp" size="sm" asChild>
+            <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">
+              WhatsApp
+            </a>
           </Button>
         </div>
 
@@ -77,20 +106,54 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-ink-900/10 bg-cream px-4 py-4 lg:hidden dark:border-white/10 dark:bg-ink-900">
+        <div className="border-t border-ink-900/10 bg-white px-4 py-4 lg:hidden dark:border-white/10 dark:bg-ink-900">
           <div className="flex flex-col gap-4">
             {links.map((l) => (
-              <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="text-sm font-medium text-ink-700 dark:text-white/90">
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="text-sm font-medium text-ink-700 dark:text-white/90"
+              >
                 {l.label}
               </Link>
             ))}
-            <div className="flex gap-3 pt-2">
-              <Button variant="outline" size="sm" asChild className="flex-1">
-                <Link href="/admin/login">Login</Link>
-              </Button>
-              <Button variant="primary" size="sm" asChild className="flex-1">
-                <a href="https://wa.me/447000000000" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-              </Button>
+            <div className="flex flex-col gap-3 pt-2">
+              {!loading && user ? (
+                <>
+                  <p className="text-sm text-ink-400 dark:text-white/60">Signed in as @{user.username}</p>
+                  {user.isAdmin && (
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/admin/dashboard" onClick={() => setOpen(false)}>
+                        Dashboard
+                      </Link>
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      signOut();
+                      setOpen(false);
+                    }}
+                  >
+                    Sign out
+                  </Button>
+                </>
+              ) : (
+                <div className="flex gap-3">
+                  <Button variant="outline" size="sm" asChild className="flex-1">
+                    <Link href="/login" onClick={() => setOpen(false)}>
+                      Sign in
+                    </Link>
+                  </Button>
+                  <Button variant="primary" size="sm" asChild className="flex-1">
+                    <Link href="/register" onClick={() => setOpen(false)}>
+                      Register
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>

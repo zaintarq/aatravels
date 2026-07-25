@@ -1,28 +1,26 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
+import { getAllHotels } from "@/data/hotels";
+import { getAllPackages } from "@/data/packages";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.aatravelgroup.co.uk";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticRoutes = [
-    "", "/hotels", "/transport", "/umrah-packages", "/services",
-  ].map((path) => ({
-    url: `${siteUrl}${path}`,
+export default function sitemap(): MetadataRoute.Sitemap {
+  const staticRoutes = ["", "/hotels", "/transport", "/umrah-packages", "/services", "/contact"].map(
+    (path) => ({
+      url: `${siteUrl}${path}`,
+      lastModified: new Date(),
+    })
+  );
+
+  const hotels = getAllHotels().map((h) => ({
+    url: `${siteUrl}/hotels/${h.slug}`,
     lastModified: new Date(),
   }));
 
-  try {
-    const [hotels, packages] = await Promise.all([
-      prisma.hotel.findMany({ where: { active: true }, select: { slug: true, updatedAt: true } }),
-      prisma.package.findMany({ where: { active: true }, select: { slug: true, updatedAt: true } }),
-    ]);
+  const packages = getAllPackages().map((p) => ({
+    url: `${siteUrl}/umrah-packages/${p.slug}`,
+    lastModified: new Date(),
+  }));
 
-    return [
-      ...staticRoutes,
-      ...hotels.map((h: any) => ({ url: `${siteUrl}/hotels/${h.slug}`, lastModified: h.updatedAt })),
-      ...packages.map((p: any) => ({ url: `${siteUrl}/umrah-packages/${p.slug}`, lastModified: p.updatedAt })),
-    ];
-  } catch {
-    return staticRoutes;
-  }
+  return [...staticRoutes, ...hotels, ...packages];
 }

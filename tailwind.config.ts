@@ -36,16 +36,15 @@ const config: Config = {
           100: "#ECECF0",
           400: "#54545F",
           700: "#232329",
+          800: "#18181C",
           900: "#111114",
+          950: "#0A0A0C",
         },
-        cream: "#FFFFFF",
+        cream: "#F6F4F5",
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "Georgia", "serif"],
-        body: ["var(--font-inter)", "system-ui", "sans-serif"],
-      },
-      backgroundImage: {
-        "star-pattern": "url('/images/pattern-star.svg')",
+        display: ["var(--font-display)", "Georgia", "serif"],
+        body: ["var(--font-body)", "system-ui", "sans-serif"],
       },
       keyframes: {
         "fade-up": {

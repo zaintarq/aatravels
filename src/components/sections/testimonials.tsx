@@ -30,13 +30,13 @@ export function Testimonials() {
   const t = testimonials[index];
 
   return (
-    <section className="bg-cream py-24 dark:bg-ink-900">
+    <section className="bg-cream py-24 dark:bg-ink-800">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">Testimonials</p>
         <h2 className="mt-3 font-display text-3xl font-semibold text-ink-900 dark:text-white">What our travellers say</h2>
         <StarDivider />
 
-        <div className="mt-10 rounded-2xl border border-ink-900/10 bg-white p-10 dark:border-white/10 dark:bg-white/5">
+        <div className="mt-10 rounded-2xl border border-ink-900/10 bg-white p-10 dark:border-white/10 dark:bg-ink-900">
           <Quote className="mx-auto mb-4 text-maroon-300" />
           <div className="mb-4 flex justify-center gap-1 text-maroon-300">
             {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
