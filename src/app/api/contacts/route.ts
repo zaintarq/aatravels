@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validations";
 import { createContact } from "@/lib/firebase/data";
 
+export const runtime = "edge";
+
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();

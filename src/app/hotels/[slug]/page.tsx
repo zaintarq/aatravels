@@ -10,6 +10,8 @@ import { ReviewForm } from "@/components/sections/review-form";
 import { getHotelBySlug, getRelatedHotels } from "@/data/hotels";
 import { getApprovedReviews } from "@/lib/firebase/data";
 
+export const runtime = "edge";
+
 type HotelPageProps = {
   params: Promise<{ slug: string }>;
 };

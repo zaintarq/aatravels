@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { signAdminToken } from "@/lib/auth";
 import { resolveAdminFromBearer } from "@/lib/firebase/admin-check";
 
+export const runtime = "edge";
+
 /** Exchange a Firebase ID token for an admin session cookie — only if Firestore isAdmin is yes/true. */
 export async function POST(req: Request) {
   const admin = await resolveAdminFromBearer(req.headers.get("authorization"));
@@ -9,7 +11,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Not an admin account" }, { status: 403 });
   }
 
-  const token = signAdminToken({
+  const token = await signAdminToken({
     id: admin.uid,
     email: admin.email,
     role: "ADMIN",

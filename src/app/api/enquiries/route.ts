@@ -3,6 +3,9 @@ import { enquirySchema } from "@/lib/validations";
 import { sendEnquiryEmails } from "@/lib/mailer";
 import { createEnquiry } from "@/lib/firebase/data";
 
+export const runtime = "edge";
+
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

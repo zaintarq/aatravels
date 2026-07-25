@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { travelAgentSchema } from "@/lib/validations";
 import { createTravelAgent } from "@/lib/firebase/data";
 
+export const runtime = "edge";
+
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();

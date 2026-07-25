@@ -1,8 +1,6 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+const encoder = new TextEncoder();
 
 export interface AdminTokenPayload {
   id: string;
@@ -10,30 +8,38 @@ export interface AdminTokenPayload {
   role: string;
 }
 
-export async function hashPassword(password: string) {
-  return bcrypt.hash(password, 12);
+function getSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not set");
+  return encoder.encode(secret);
 }
 
-export async function verifyPassword(password: string, hash: string) {
-  return bcrypt.compare(password, hash);
+/** Edge-safe admin JWT (jose works on Cloudflare Pages). */
+export async function signAdminToken(payload: AdminTokenPayload) {
+  return new SignJWT({
+    id: payload.id,
+    email: payload.email,
+    role: payload.role,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(process.env.JWT_EXPIRES_IN || "7d")
+    .sign(getSecret());
 }
 
-export function signAdminToken(payload: AdminTokenPayload) {
-  if (!JWT_SECRET) throw new Error("JWT_SECRET is not set");
-  const options: jwt.SignOptions = { expiresIn: JWT_EXPIRES_IN as jwt.SignOptions["expiresIn"] };
-  return jwt.sign(payload, JWT_SECRET, options);
-}
-
-export function verifyAdminToken(token: string): AdminTokenPayload | null {
+export async function verifyAdminToken(token: string): Promise<AdminTokenPayload | null> {
   try {
-    if (!JWT_SECRET) throw new Error("JWT_SECRET is not set");
-    return jwt.verify(token, JWT_SECRET) as AdminTokenPayload;
+    const { payload } = await jwtVerify(token, getSecret());
+    return {
+      id: String(payload.id),
+      email: String(payload.email),
+      role: String(payload.role),
+    };
   } catch {
     return null;
   }
 }
 
-// Simple role-based access check, used inside API routes / server actions.
 export function requireRole(payload: AdminTokenPayload | null, allowed: string[]) {
   if (!payload) return false;
   return allowed.includes(payload.role);

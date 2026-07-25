@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { COLLECTIONS, listDocuments } from "@/lib/firebase/firestore";
 import { updateEnquiryStatus } from "@/lib/firebase/data";
 
+export const runtime = "edge";
+
+
 export async function GET() {
   try {
     const enquiries = await listDocuments(COLLECTIONS.enquiries, {

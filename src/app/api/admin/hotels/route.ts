@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { getAllHotels } from "@/data/hotels";
 import { requireRole, verifyAdminToken } from "@/lib/auth";
 
-function getAdminFromCookie(req: Request) {
+export const runtime = "edge";
+
+async function getAdminFromCookie(req: Request) {
   const cookie = req.headers.get("cookie") || "";
   const match = cookie.match(/(?:^|;\s*)admin_token=([^;]+)/);
   return match ? verifyAdminToken(decodeURIComponent(match[1])) : null;
 }
 
 export async function GET(req: Request) {
-  const admin = getAdminFromCookie(req);
+  const admin = await getAdminFromCookie(req);
   if (!requireRole(admin, ["SUPER_ADMIN", "ADMIN", "EDITOR"])) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

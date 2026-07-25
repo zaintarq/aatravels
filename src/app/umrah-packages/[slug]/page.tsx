@@ -5,6 +5,8 @@ import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
 import { getPackageBySlug } from "@/data/packages";
 
+export const runtime = "edge";
+
 type PackagePageProps = {
   params: Promise<{ slug: string }>;
 };
