@@ -8,7 +8,7 @@ import { Input, Label } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
 
 export default function LoginPage() {
-  const { signIn, user, loading: authLoading } = useAuth();
+  const { signIn, user, loading: authLoading, refreshProfile } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
@@ -19,11 +19,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (authLoading || !user) return;
-    if (next?.startsWith("/admin")) {
-      if (user.isAdmin) router.replace(next);
+    if (user.isAdmin) {
+      router.replace(next?.startsWith("/admin") ? next : next || "/admin/dashboard");
       return;
     }
-    if (user.isAdmin && next) {
+    if (next && !next.startsWith("/admin")) {
       router.replace(next);
     }
   }, [authLoading, user, next, router]);
@@ -34,31 +34,8 @@ export default function LoginPage() {
     setError("");
     try {
       await signIn(email, password);
-      // Destination resolved after auth state updates; also handle immediately via profile
-      const { getClientAuth, getClientDb } = await import("@/lib/firebase/client");
-      const { doc, getDoc } = await import("firebase/firestore");
-      const uid = getClientAuth().currentUser?.uid;
-      let isAdmin = false;
-      if (uid) {
-        const snap = await getDoc(doc(getClientDb(), "users", uid));
-        const raw = snap.data()?.isAdmin;
-        isAdmin =
-          raw === true ||
-          (typeof raw === "string" && ["yes", "true", "1"].includes(raw.toLowerCase()));
-      }
-
-      if (next?.startsWith("/admin") && !isAdmin) {
-        setError("This account is not staff. Ask an owner to set isAdmin to yes in Firestore.");
-        return;
-      }
-
-      if (next) {
-        router.push(isAdmin || !next.startsWith("/admin") ? next : "/");
-      } else if (isAdmin) {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/");
-      }
+      // Ensure latest Firestore isAdmin + cookie after console edits
+      await refreshProfile();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Could not sign in";
       setError(
@@ -84,8 +61,8 @@ export default function LoginPage() {
           />
           <h1 className="mt-6 font-display text-3xl font-semibold text-ink-900 dark:text-white">Welcome back</h1>
           <p className="mt-2 text-sm text-ink-400 dark:text-white/60">
-            Sign in with your email. Staff accounts use the same login once{" "}
-            <code className="text-xs">isAdmin</code> is set in Firestore.
+            Sign in with your email. Staff: set <code className="text-xs">isAdmin</code> to{" "}
+            <strong>true</strong> (boolean) on your user doc in Firestore, then sign in again.
           </p>
         </div>
 
@@ -125,7 +102,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-400 dark:text-white/60">
-          Staff access uses the same login — set <code className="text-xs">isAdmin</code> in Firestore.
+          After setting isAdmin, sign out and sign in again to open Hotels &amp; Packages.
         </p>
       </div>
     </div>

@@ -4,11 +4,24 @@ import { resolveAdminFromBearer } from "@/lib/firebase/admin-check";
 
 export const runtime = "edge";
 
+function clearCookie(res: NextResponse) {
+  res.cookies.set("admin_token", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
 /** Exchange a Firebase ID token for an admin session cookie — only if Firestore isAdmin is yes/true. */
 export async function POST(req: Request) {
   const admin = await resolveAdminFromBearer(req.headers.get("authorization"));
   if (!admin) {
-    return NextResponse.json({ error: "Not an admin account" }, { status: 403 });
+    return NextResponse.json(
+      { error: "Not an admin account. In Firestore users/{uid} set isAdmin to true (boolean) or yes." },
+      { status: 403 }
+    );
   }
 
   const token = await signAdminToken({
@@ -24,7 +37,7 @@ export async function POST(req: Request) {
 
   res.cookies.set("admin_token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
@@ -35,6 +48,6 @@ export async function POST(req: Request) {
 
 export async function DELETE() {
   const res = NextResponse.json({ success: true });
-  res.cookies.set("admin_token", "", { path: "/", maxAge: 0 });
+  clearCookie(res);
   return res;
 }

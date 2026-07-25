@@ -1,25 +1,15 @@
 import { verifyFirebaseIdToken } from "@/lib/firebase/verify-token";
 import { firebasePublicConfig } from "@/lib/firebase/public-config";
+import { isAdminFlag } from "@/lib/firebase/is-admin";
 
 export type FirestoreUserProfile = {
   uid: string;
   email?: string;
   username?: string;
-  isAdmin?: boolean | string;
+  isAdmin?: boolean | string | number;
 };
 
-function parseIsAdmin(value: unknown): boolean {
-  if (value === true || value === 1) return true;
-  if (typeof value === "string") {
-    const v = value.trim().toLowerCase();
-    return v === "yes" || v === "true" || v === "1";
-  }
-  return false;
-}
-
-export function isAdminFlag(value: unknown): boolean {
-  return parseIsAdmin(value);
-}
+export { parseIsAdmin, isAdminFlag } from "@/lib/firebase/is-admin";
 
 /** Read a Firestore user doc using the caller's Firebase ID token (respects security rules). */
 export async function getUserProfileWithToken(
@@ -38,14 +28,24 @@ export async function getUserProfileWithToken(
   if (!res.ok) return null;
 
   const data = (await res.json()) as {
-    fields?: Record<string, { stringValue?: string; booleanValue?: boolean; integerValue?: string }>;
+    fields?: Record<
+      string,
+      {
+        stringValue?: string;
+        booleanValue?: boolean;
+        integerValue?: string;
+      }
+    >;
   };
 
   const fields = data.fields || {};
   const getString = (key: string) => fields[key]?.stringValue;
-  const getBoolOrString = (key: string) => {
-    if (typeof fields[key]?.booleanValue === "boolean") return fields[key]?.booleanValue;
-    if (fields[key]?.stringValue !== undefined) return fields[key]?.stringValue;
+  const getAdminRaw = (key: string): unknown => {
+    const field = fields[key];
+    if (!field) return undefined;
+    if (typeof field.booleanValue === "boolean") return field.booleanValue;
+    if (field.stringValue !== undefined) return field.stringValue;
+    if (field.integerValue !== undefined) return Number(field.integerValue);
     return undefined;
   };
 
@@ -53,7 +53,7 @@ export async function getUserProfileWithToken(
     uid,
     email: getString("email"),
     username: getString("username"),
-    isAdmin: getBoolOrString("isAdmin") as boolean | string | undefined,
+    isAdmin: getAdminRaw("isAdmin") as boolean | string | number | undefined,
   };
 }
 
@@ -69,8 +69,8 @@ export async function resolveAdminFromBearer(authHeader: string | null) {
 
   return {
     uid: verified.uid,
-    email: verified.email,
-    username: profile.username || verified.email.split("@")[0],
+    email: verified.email || profile.email || "",
+    username: profile.username || verified.email.split("@")[0] || "admin",
     idToken: token,
   };
 }

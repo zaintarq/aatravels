@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
+import { getJwtSecret } from "@/lib/jwt-secret";
 
 const encoder = new TextEncoder();
 
@@ -9,9 +10,7 @@ export interface AdminTokenPayload {
 }
 
 function getSecret() {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET is not set");
-  return encoder.encode(secret);
+  return encoder.encode(getJwtSecret());
 }
 
 /** Edge-safe admin JWT (jose works on Cloudflare Pages). */

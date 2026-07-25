@@ -1,4 +1,5 @@
 import { jwtVerify } from "jose";
+import { getJwtSecret } from "@/lib/jwt-secret";
 
 export interface AdminTokenPayload {
   id: string;
@@ -8,15 +9,14 @@ export interface AdminTokenPayload {
 
 const encoder = new TextEncoder();
 
-// Edge-runtime safe verification (middleware.ts cannot use Node-only
-// packages like jsonwebtoken/bcryptjs, so this mirrors lib/auth.ts
-// using `jose`, which works in both Node and the Edge runtime).
 export async function verifyAdminTokenEdge(token: string): Promise<AdminTokenPayload | null> {
   try {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw new Error("JWT_SECRET is not set");
-    const { payload } = await jwtVerify(token, encoder.encode(secret));
-    return payload as unknown as AdminTokenPayload;
+    const { payload } = await jwtVerify(token, encoder.encode(getJwtSecret()));
+    return {
+      id: String(payload.id),
+      email: String(payload.email),
+      role: String(payload.role),
+    };
   } catch {
     return null;
   }

@@ -1,3 +1,4 @@
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import { firebasePublicConfig } from "@/lib/firebase/public-config";
 
 export type VerifiedFirebaseUser = {
@@ -5,27 +6,32 @@ export type VerifiedFirebaseUser = {
   email: string;
 };
 
-/** Verify a Firebase ID token via Identity Toolkit (no Admin SDK required). */
+const jwks = createRemoteJWKSet(
+  new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
+);
+
+/**
+ * Verify a Firebase ID token with Google's JWKS (works on Cloudflare Edge).
+ * Avoids Identity Toolkit + API-key referrer restrictions that break admin login.
+ */
 export async function verifyFirebaseIdToken(idToken: string): Promise<VerifiedFirebaseUser | null> {
-  const apiKey = firebasePublicConfig.apiKey;
-  if (!apiKey || !idToken) return null;
+  if (!idToken) return null;
 
-  const res = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
-    }
-  );
+  const projectId = firebasePublicConfig.projectId;
+  if (!projectId) return null;
 
-  if (!res.ok) return null;
+  try {
+    const { payload } = await jwtVerify(idToken, jwks, {
+      issuer: `https://securetoken.google.com/${projectId}`,
+      audience: projectId,
+    });
 
-  const data = (await res.json()) as {
-    users?: Array<{ localId: string; email?: string }>;
-  };
-  const user = data.users?.[0];
-  if (!user?.localId || !user.email) return null;
+    const uid = typeof payload.user_id === "string" ? payload.user_id : typeof payload.sub === "string" ? payload.sub : "";
+    const email = typeof payload.email === "string" ? payload.email : "";
+    if (!uid) return null;
 
-  return { uid: user.localId, email: user.email };
+    return { uid, email: email || `${uid}@users.firebase` };
+  } catch {
+    return null;
+  }
 }

@@ -19,6 +19,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getClientAuth, getClientDb, isFirebaseConfigured } from "@/lib/firebase/client";
+import { parseIsAdmin } from "@/lib/firebase/is-admin";
 
 export type AuthUser = {
   uid: string;
@@ -34,18 +35,10 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   getIdToken: () => Promise<string | null>;
+  refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-function parseIsAdmin(value: unknown): boolean {
-  if (value === true || value === 1) return true;
-  if (typeof value === "string") {
-    const v = value.trim().toLowerCase();
-    return v === "yes" || v === "true" || v === "1";
-  }
-  return false;
-}
 
 async function fetchProfile(uid: string, fallbackName?: string | null) {
   const snap = await getDoc(doc(getClientDb(), "users", uid));
@@ -62,20 +55,53 @@ async function fetchProfile(uid: string, fallbackName?: string | null) {
   };
 }
 
-async function syncAdminSession(idToken: string, isAdmin: boolean) {
-  if (isAdmin) {
+async function syncAdminSession(idToken: string, isAdmin: boolean): Promise<boolean> {
+  if (!isAdmin) {
     await fetch("/api/auth/admin-session", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${idToken}` },
-    });
-  } else {
-    await fetch("/api/auth/admin-session", { method: "DELETE" }).catch(() => undefined);
+      method: "DELETE",
+      credentials: "include",
+    }).catch(() => undefined);
+    return false;
   }
+
+  const res = await fetch("/api/auth/admin-session", {
+    method: "POST",
+    credentials: "include",
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+
+  return res.ok;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const applyUser = useCallback(async (firebaseUser: User) => {
+    const profile = await fetchProfile(firebaseUser.uid, firebaseUser.displayName);
+    const idToken = await firebaseUser.getIdToken(true);
+    const sessionOk = await syncAdminSession(idToken, profile.isAdmin);
+
+    if (profile.isAdmin && !sessionOk) {
+      // Retry once — first request can race with token propagation
+      const retryToken = await firebaseUser.getIdToken(true);
+      const retryOk = await syncAdminSession(retryToken, true);
+      if (!retryOk) {
+        throw new Error(
+          "Staff profile found, but admin session failed. Confirm Firestore users/{uid}.isAdmin is true, then sign in again."
+        );
+      }
+    }
+
+    const nextUser: AuthUser = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email || "",
+      username: profile.username,
+      isAdmin: profile.isAdmin,
+    };
+    setUser(nextUser);
+    return nextUser;
+  }, []);
 
   useEffect(() => {
     if (!isFirebaseConfigured()) {
@@ -88,35 +114,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!firebaseUser) {
         setUser(null);
         setLoading(false);
-        await fetch("/api/auth/admin-session", { method: "DELETE" }).catch(() => undefined);
+        await fetch("/api/auth/admin-session", {
+          method: "DELETE",
+          credentials: "include",
+        }).catch(() => undefined);
         return;
       }
 
       try {
-        const profile = await fetchProfile(firebaseUser.uid, firebaseUser.displayName);
-        const idToken = await firebaseUser.getIdToken();
-        await syncAdminSession(idToken, profile.isAdmin);
-
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email || "",
-          username: profile.username,
-          isAdmin: profile.isAdmin,
-        });
+        await applyUser(firebaseUser);
       } catch {
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email || "",
-          username: firebaseUser.displayName || "Traveller",
-          isAdmin: false,
-        });
+        // Keep signed-in for browsing; admin cookie may be missing
+        try {
+          const profile = await fetchProfile(firebaseUser.uid, firebaseUser.displayName);
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || "",
+            username: profile.username,
+            isAdmin: profile.isAdmin,
+          });
+        } catch {
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || "",
+            username: firebaseUser.displayName || "Traveller",
+            isAdmin: false,
+          });
+        }
       } finally {
         setLoading(false);
       }
     });
 
     return () => unsub();
-  }, []);
+  }, [applyUser]);
 
   const signUp = useCallback(async (username: string, email: string, password: string) => {
     const cleaned = username.trim().toLowerCase().replace(/\s+/g, "");
@@ -148,23 +179,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const auth = getClientAuth();
-    const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
-    const profile = await fetchProfile(cred.user.uid, cred.user.displayName);
-    const idToken = await cred.user.getIdToken();
-    await syncAdminSession(idToken, profile.isAdmin);
-
-    setUser({
-      uid: cred.user.uid,
-      email: cred.user.email || email,
-      username: profile.username,
-      isAdmin: profile.isAdmin,
-    });
-  }, []);
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      const auth = getClientAuth();
+      const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+      await applyUser(cred.user);
+    },
+    [applyUser]
+  );
 
   const signOut = useCallback(async () => {
-    await fetch("/api/auth/admin-session", { method: "DELETE" }).catch(() => undefined);
+    await fetch("/api/auth/admin-session", {
+      method: "DELETE",
+      credentials: "include",
+    }).catch(() => undefined);
     await firebaseSignOut(getClientAuth());
     setUser(null);
   }, []);
@@ -175,9 +203,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return current.getIdToken();
   }, []);
 
+  const refreshProfile = useCallback(async () => {
+    const current = getClientAuth().currentUser;
+    if (!current) return;
+    await applyUser(current);
+  }, [applyUser]);
+
   const value = useMemo(
-    () => ({ user, loading, signUp, signIn, signOut, getIdToken }),
-    [user, loading, signUp, signIn, signOut, getIdToken]
+    () => ({ user, loading, signUp, signIn, signOut, getIdToken, refreshProfile }),
+    [user, loading, signUp, signIn, signOut, getIdToken, refreshProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
