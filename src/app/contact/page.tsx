@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { MessageCircle, Mail, Clock3, MapPin } from "lucide-react";
+import { MessageCircle, Mail, Clock3, MapPin, Facebook, Instagram } from "lucide-react";
 import { QuoteForm } from "@/components/sections/quote-form";
 import { Button } from "@/components/ui/button";
+import { SOCIAL_LINKS } from "@/lib/social";
 
 export const metadata: Metadata = {
   title: "Contact & Quote",
@@ -58,10 +59,29 @@ export default function ContactPage() {
                 Message the team directly with your travel dates and guest count.
               </p>
               <Button variant="whatsapp" className="mt-5" asChild>
-                <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
+                <a href={SOCIAL_LINKS.whatsapp} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={16} /> Chat on WhatsApp
                 </a>
               </Button>
+            </div>
+
+            <div className="rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-900">
+              <p className="font-display text-lg font-semibold text-ink-900 dark:text-white">Follow us</p>
+              <p className="mt-2 text-sm text-ink-400 dark:text-white/60">
+                Updates, offers and travel tips on Facebook and Instagram.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button variant="outline" asChild>
+                  <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer">
+                    <Facebook size={16} /> Facebook
+                  </a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer">
+                    <Instagram size={16} /> Instagram
+                  </a>
+                </Button>
+              </div>
             </div>
           </aside>
 
