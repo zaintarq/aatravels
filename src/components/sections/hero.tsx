@@ -2,21 +2,23 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Search, Car } from "lucide-react";
 
 export function Hero() {
   return (
     <section className="relative flex min-h-[88vh] items-center overflow-hidden bg-ink-900">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=2400&auto=format&fit=crop')",
-        }}
+      <Image
+        src="/images/hero-madinah.png"
+        alt="Al-Masjid an-Nabawi, Madinah"
+        fill
+        priority
+        className="object-cover object-[35%_40%]"
+        sizes="100vw"
       />
-      <div className="absolute inset-0 bg-ink-900/75" />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/50 to-transparent" />
+      <div className="absolute inset-0 bg-ink-900/70" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/55 to-ink-900/25" />
 
       <div className="relative mx-auto max-w-5xl px-4 py-32 text-center sm:px-6 lg:px-8">
         <motion.p
