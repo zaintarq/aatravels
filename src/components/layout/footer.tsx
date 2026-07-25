@@ -10,10 +10,10 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Image
               src="/images/aa-travel-group-logo.png"
-              alt="AA Travel Group"
+              alt="AA Group Travels"
               width={180}
               height={180}
-              className="h-20 w-auto object-contain"
+              className="h-24 w-auto rounded-lg bg-white object-contain p-1"
             />
             <p className="mt-3 text-sm text-white/60">
               Hotel stays and transport services in Makkah &amp; Madinah for families and groups.

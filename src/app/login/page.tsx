@@ -77,10 +77,10 @@ export default function LoginPage() {
         <div className="mb-8 flex flex-col items-center text-center">
           <Image
             src="/images/aa-travel-group-logo.png"
-            alt="AA Travel Group"
+            alt="AA Group Travels"
             width={120}
             height={120}
-            className="h-16 w-auto object-contain"
+            className="h-20 w-auto object-contain"
           />
           <h1 className="mt-6 font-display text-3xl font-semibold text-ink-900 dark:text-white">Welcome back</h1>
           <p className="mt-2 text-sm text-ink-400 dark:text-white/60">

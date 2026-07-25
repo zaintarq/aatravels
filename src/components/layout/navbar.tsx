@@ -31,11 +31,11 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/images/aa-travel-group-logo.png"
-            alt="AA Travel Group"
+            alt="AA Group Travels"
             width={160}
             height={160}
             priority
-            className="h-14 w-auto object-contain"
+            className="h-16 w-auto object-contain"
           />
         </Link>
 
