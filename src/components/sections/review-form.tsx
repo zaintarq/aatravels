@@ -8,7 +8,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Textarea, Label } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 
 type Props = {
   hotelId: string;
@@ -49,7 +49,7 @@ export function ReviewForm({ hotelId }: Props) {
         throw new Error("Please write a bit more about your stay");
       }
 
-      await addDoc(collection(db, "reviews"), {
+      await addDoc(collection(getClientDb(), "reviews"), {
         hotelId,
         firebaseUid: user!.uid,
         authorName: user!.username,

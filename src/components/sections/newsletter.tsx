@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 
 export function Newsletter() {
   const [email, setEmail] = useState("");
@@ -19,6 +19,7 @@ export function Newsletter() {
 
     try {
       // Store subscriber
+      const db = getClientDb();
       await addDoc(collection(db, "newsletterSubscribers"), {
         email: cleaned,
         createdAt: new Date().toISOString(),

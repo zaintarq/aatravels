@@ -18,7 +18,7 @@ import {
   type User,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase/client";
+import { getClientAuth, getClientDb, isFirebaseConfigured } from "@/lib/firebase/client";
 
 export type AuthUser = {
   uid: string;
@@ -48,7 +48,7 @@ function parseIsAdmin(value: unknown): boolean {
 }
 
 async function fetchProfile(uid: string, fallbackName?: string | null) {
-  const snap = await getDoc(doc(db, "users", uid));
+  const snap = await getDoc(doc(getClientDb(), "users", uid));
   if (snap.exists()) {
     const data = snap.data() as { username?: string; isAdmin?: unknown };
     return {
@@ -78,6 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isFirebaseConfigured()) {
+      setLoading(false);
+      return;
+    }
+
+    const auth = getClientAuth();
     const unsub = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       if (!firebaseUser) {
         setUser(null);
@@ -116,6 +122,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const cleaned = username.trim().toLowerCase().replace(/\s+/g, "");
     if (cleaned.length < 3) throw new Error("Username must be at least 3 characters");
 
+    const db = getClientDb();
+    const auth = getClientAuth();
     const usernameRef = doc(db, "usernames", cleaned);
     const existing = await getDoc(usernameRef);
     if (existing.exists()) throw new Error("Username is already taken");
@@ -141,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
+    const auth = getClientAuth();
     const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
     const profile = await fetchProfile(cred.user.uid, cred.user.displayName);
     const idToken = await cred.user.getIdToken();
@@ -156,13 +165,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await fetch("/api/auth/admin-session", { method: "DELETE" }).catch(() => undefined);
-    await firebaseSignOut(auth);
+    await firebaseSignOut(getClientAuth());
     setUser(null);
   }, []);
 
   const getIdToken = useCallback(async () => {
-    if (!auth.currentUser) return null;
-    return auth.currentUser.getIdToken();
+    const current = getClientAuth().currentUser;
+    if (!current) return null;
+    return current.getIdToken();
   }, []);
 
   const value = useMemo(

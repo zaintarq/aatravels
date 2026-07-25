@@ -7,7 +7,7 @@ import { addDoc, collection, getDocs, orderBy, query } from "firebase/firestore"
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 
 type Row = {
   id: string;
@@ -42,7 +42,7 @@ export default function AdminPackagesPage() {
   const [saving, setSaving] = useState(false);
 
   async function load() {
-    const snap = await getDocs(query(collection(db, "packages"), orderBy("createdAt", "desc")));
+    const snap = await getDocs(query(collection(getClientDb(), "packages"), orderBy("createdAt", "desc")));
     setRows(
       snap.docs.map((d) => {
         const data = d.data();
@@ -72,7 +72,7 @@ export default function AdminPackagesPage() {
     setSaving(true);
     setError("");
     try {
-      await addDoc(collection(db, "packages"), {
+      await addDoc(collection(getClientDb(), "packages"), {
         title: title.trim(),
         slug: slugify(title.trim()) || `pkg-${Date.now()}`,
         type,

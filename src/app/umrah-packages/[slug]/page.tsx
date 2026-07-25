@@ -6,7 +6,7 @@ import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { whatsappLink } from "@/lib/utils";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 import { getPackageBySlug } from "@/data/packages";
 
 type Pkg = {
@@ -31,7 +31,7 @@ export default function PackageDetailPage() {
       return;
     }
 
-    getDocs(query(collection(db, "packages"), where("slug", "==", slug), limit(1)))
+    getDocs(query(collection(getClientDb(), "packages"), where("slug", "==", slug), limit(1)))
       .then((snap) => {
         if (snap.empty) {
           setPkg(null);

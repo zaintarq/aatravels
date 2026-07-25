@@ -35,12 +35,12 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
       // Destination resolved after auth state updates; also handle immediately via profile
-      const { auth, db } = await import("@/lib/firebase/client");
+      const { getClientAuth, getClientDb } = await import("@/lib/firebase/client");
       const { doc, getDoc } = await import("firebase/firestore");
-      const uid = auth.currentUser?.uid;
+      const uid = getClientAuth().currentUser?.uid;
       let isAdmin = false;
       if (uid) {
-        const snap = await getDoc(doc(db, "users", uid));
+        const snap = await getDoc(doc(getClientDb(), "users", uid));
         const raw = snap.data()?.isAdmin;
         isAdmin =
           raw === true ||

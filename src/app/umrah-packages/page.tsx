@@ -5,7 +5,7 @@ import Link from "next/link";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 import { getAllPackages, type UmrahPackage } from "@/data/packages";
 
 type PackageCard = {
@@ -32,7 +32,7 @@ export default function PackagesPage() {
   );
 
   useEffect(() => {
-    getDocs(query(collection(db, "packages"), orderBy("createdAt", "desc")))
+    getDocs(query(collection(getClientDb(), "packages"), orderBy("createdAt", "desc")))
       .then((snap) => {
         const fromFb: PackageCard[] = snap.docs
           .map((d) => {

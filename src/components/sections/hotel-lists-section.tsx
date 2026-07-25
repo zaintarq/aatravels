@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { ChevronDown } from "lucide-react";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 import { cn } from "@/lib/utils";
 import {
   CATEGORY_LABELS,
@@ -81,7 +81,7 @@ export function HotelListsSection() {
   const [extra, setExtra] = useState<Listing[]>([]);
 
   useEffect(() => {
-    getDocs(query(collection(db, "hotelListings"), orderBy("createdAt", "desc")))
+    getDocs(query(collection(getClientDb(), "hotelListings"), orderBy("createdAt", "desc")))
       .then((snap) => {
         const rows: Listing[] = snap.docs.map((d) => {
           const data = d.data();

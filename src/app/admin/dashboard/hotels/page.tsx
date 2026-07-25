@@ -7,7 +7,7 @@ import { addDoc, collection, getDocs, orderBy, query } from "firebase/firestore"
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 import { CATEGORY_LABELS, type HotelCategoryKey, type HotelCity } from "@/data/hotel-listings";
 
 type Row = { id: string; name: string; city: string; category: string; createdAt?: string };
@@ -25,7 +25,7 @@ export default function AdminHotelsPage() {
   const categoryOptions = Object.entries(CATEGORY_LABELS[city]) as [HotelCategoryKey, string][];
 
   async function load() {
-    const snap = await getDocs(query(collection(db, "hotelListings"), orderBy("createdAt", "desc")));
+    const snap = await getDocs(query(collection(getClientDb(), "hotelListings"), orderBy("createdAt", "desc")));
     setRows(
       snap.docs.map((d) => {
         const data = d.data();
@@ -59,7 +59,7 @@ export default function AdminHotelsPage() {
     setSaving(true);
     setError("");
     try {
-      await addDoc(collection(db, "hotelListings"), {
+      await addDoc(collection(getClientDb(), "hotelListings"), {
         name: name.trim(),
         city,
         category,
