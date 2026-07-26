@@ -6,7 +6,6 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
 import { getClientDb } from "@/lib/firebase/client";
-import { getAllPackages, type UmrahPackage } from "@/data/packages";
 
 type PackageCard = {
   id: string;
@@ -19,17 +18,7 @@ type PackageCard = {
 };
 
 export default function PackagesPage() {
-  const [items, setItems] = useState<PackageCard[]>(() =>
-    getAllPackages().map((p) => ({
-      id: p.id,
-      title: p.title,
-      slug: p.slug,
-      summary: p.summary,
-      nights: p.nights,
-      priceFrom: p.priceFrom,
-      type: "package",
-    }))
-  );
+  const [items, setItems] = useState<PackageCard[]>([]);
 
   useEffect(() => {
     getDocs(query(collection(getClientDb(), "packages"), orderBy("createdAt", "desc")))
@@ -50,19 +39,7 @@ export default function PackagesPage() {
           })
           .filter(Boolean) as PackageCard[];
 
-        if (fromFb.length) {
-          const seeded = getAllPackages().map((p: UmrahPackage) => ({
-            id: p.id,
-            title: p.title,
-            slug: p.slug,
-            summary: p.summary,
-            nights: p.nights,
-            priceFrom: p.priceFrom,
-            type: "package",
-          }));
-          const seen = new Set(fromFb.map((p) => p.slug));
-          setItems([...fromFb, ...seeded.filter((p) => !seen.has(p.slug))]);
-        }
+        setItems(fromFb);
       })
       .catch(() => undefined);
   }, []);
@@ -78,6 +55,11 @@ export default function PackagesPage() {
       </div>
 
       <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.length === 0 && (
+          <p className="col-span-full text-center text-sm text-ink-400 dark:text-white/60">
+            No packages available yet. Check back soon or contact us for custom Umrah packages.
+          </p>
+        )}
         {items.map((p) => (
           <div
             key={p.id}
