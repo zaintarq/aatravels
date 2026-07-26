@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const cards = [
   { href: "/admin/dashboard/hotels", title: "Hotels", desc: "Add or remove hotel names on Makkah & Madinah lists" },
-  { href: "/admin/dashboard/packages", title: "Packages & Deals", desc: "Create Umrah packages and special offers" },
+  { href: "/admin/dashboard/packages", title: "Packages & Deals", desc: "Add or remove Umrah packages and special offers" },
 ];
 
 export default function AdminDashboardPage() {

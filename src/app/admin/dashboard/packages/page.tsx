@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { addDoc, collection, getDocs, orderBy, query } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -40,6 +41,7 @@ export default function AdminPackagesPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function load() {
     const snap = await getDocs(query(collection(getClientDb(), "packages"), orderBy("createdAt", "desc")));
@@ -98,6 +100,20 @@ export default function AdminPackagesPage() {
       setError(err instanceof Error ? err.message : "Could not save package");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function deletePackage(id: string) {
+    if (!user?.isAdmin) return;
+    setBusyId(id);
+    setError("");
+    try {
+      await deleteDoc(doc(getClientDb(), "packages", id));
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete package");
+    } finally {
+      setBusyId(null);
     }
   }
 
@@ -180,12 +196,28 @@ export default function AdminPackagesPage() {
         <h2 className="font-display text-xl font-semibold text-ink-900 dark:text-white">Saved items</h2>
         {rows.length === 0 && <p className="text-sm text-ink-400">No packages or deals yet.</p>}
         {rows.map((r) => (
-          <div key={r.id} className="rounded-lg border border-ink-900/10 px-4 py-3 dark:border-white/10">
-            <p className="font-medium text-ink-900 dark:text-white">{r.title}</p>
-            <p className="text-xs text-ink-400">
-              {r.type} · {r.nights} nights {r.priceFrom ? `· from £${r.priceFrom}` : ""}
-            </p>
-            <p className="mt-1 text-sm text-ink-400">{r.summary}</p>
+          <div
+            key={r.id}
+            className="flex items-center justify-between gap-3 rounded-lg border border-ink-900/10 px-4 py-3 dark:border-white/10"
+          >
+            <div className="flex-1">
+              <p className="font-medium text-ink-900 dark:text-white">{r.title}</p>
+              <p className="text-xs text-ink-400">
+                {r.type} · {r.nights} nights {r.priceFrom ? `· from £${r.priceFrom}` : ""}
+              </p>
+              <p className="mt-1 text-sm text-ink-400">{r.summary}</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={busyId === r.id}
+              onClick={() => deletePackage(r.id)}
+              className="shrink-0 text-maroon-500 hover:text-maroon-600"
+            >
+              <Trash2 size={14} />
+              {busyId === r.id ? "Deleting..." : "Remove"}
+            </Button>
           </div>
         ))}
       </div>
