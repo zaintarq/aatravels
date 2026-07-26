@@ -10,7 +10,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
-            <BrandLogo showWordmark imageClassName="hidden" />
+            <BrandLogo showWordmark imageClassName="hidden" lightTextColor />
             <p className="mt-3 text-sm text-white/60">
               Hotel stays and transport services in Makkah &amp; Madinah for families and groups.
             </p>

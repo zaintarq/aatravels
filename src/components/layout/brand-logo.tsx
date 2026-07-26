@@ -7,6 +7,7 @@ type BrandLogoProps = {
   imageClassName?: string;
   showWordmark?: boolean;
   href?: string;
+  lightTextColor?: boolean;
 };
 
 export function BrandLogo({
@@ -14,6 +15,7 @@ export function BrandLogo({
   imageClassName,
   showWordmark = true,
   href = "/",
+  lightTextColor = false,
 }: BrandLogoProps) {
   const content = (
     <>
@@ -27,10 +29,10 @@ export function BrandLogo({
       />
       {showWordmark && (
         <span className="hidden min-w-0 flex-col leading-none sm:flex">
-          <span className="font-brand text-lg font-semibold tracking-tight text-ink-900 dark:text-white">
+          <span className={cn("font-brand text-lg font-semibold tracking-tight", lightTextColor ? "text-white" : "text-ink-900 dark:text-white")}>
             AA Group
           </span>
-          <span className="font-brand mt-0.5 text-[11px] font-medium uppercase tracking-[0.35em] text-maroon-500 dark:text-maroon-300">
+          <span className={cn("font-brand mt-0.5 text-[11px] font-medium uppercase tracking-[0.35em]", lightTextColor ? "text-gold-400" : "text-maroon-500 dark:text-maroon-300")}>
             Travels
           </span>
         </span>
