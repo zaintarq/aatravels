@@ -80,17 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const applyUser = useCallback(async (firebaseUser: User) => {
     const profile = await fetchProfile(firebaseUser.uid, firebaseUser.displayName);
     const idToken = await firebaseUser.getIdToken(true);
-    const sessionOk = await syncAdminSession(idToken, profile.isAdmin);
 
-    if (profile.isAdmin && !sessionOk) {
-      // Retry once — first request can race with token propagation
-      const retryToken = await firebaseUser.getIdToken(true);
-      const retryOk = await syncAdminSession(retryToken, true);
-      if (!retryOk) {
-        throw new Error(
-          "Staff profile found, but admin session failed. Confirm Firestore users/{uid}.isAdmin is true, then sign in again."
-        );
-      }
+    // Best-effort cookie for /api/admin — do NOT block staff login if this fails.
+    // Dashboard access is gated by Firestore isAdmin on the client + security rules.
+    if (profile.isAdmin) {
+      await syncAdminSession(idToken, true).catch(() => false);
+    } else {
+      await syncAdminSession(idToken, false).catch(() => false);
     }
 
     const nextUser: AuthUser = {

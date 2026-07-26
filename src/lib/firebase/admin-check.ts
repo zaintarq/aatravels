@@ -11,43 +11,50 @@ export type FirestoreUserProfile = {
 
 export { parseIsAdmin, isAdminFlag } from "@/lib/firebase/is-admin";
 
-/** Read a Firestore user doc using the caller's Firebase ID token (respects security rules). */
+function parseFirestoreFields(fields: Record<string, Record<string, unknown>> | undefined) {
+  const getString = (key: string) => {
+    const v = fields?.[key]?.stringValue;
+    return typeof v === "string" ? v : undefined;
+  };
+  const getAdminRaw = (key: string): unknown => {
+    const field = fields?.[key];
+    if (!field) return undefined;
+    if (typeof field.booleanValue === "boolean") return field.booleanValue;
+    if (typeof field.stringValue === "string") return field.stringValue;
+    if (typeof field.integerValue === "string") return Number(field.integerValue);
+    if (typeof field.doubleValue === "number") return field.doubleValue;
+    return undefined;
+  };
+  return { getString, getAdminRaw };
+}
+
+/** Read a Firestore user doc using the caller's Firebase ID token. */
 export async function getUserProfileWithToken(
   uid: string,
   idToken: string
 ): Promise<FirestoreUserProfile | null> {
   const projectId = firebasePublicConfig.projectId;
+  const apiKey = firebasePublicConfig.apiKey;
   if (!projectId) return null;
 
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${uid}`;
+  const base = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${uid}`;
+  const url = apiKey ? `${base}?key=${encodeURIComponent(apiKey)}` : base;
+
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${idToken}` },
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+      "Content-Type": "application/json",
+    },
     cache: "no-store",
   });
 
   if (!res.ok) return null;
 
   const data = (await res.json()) as {
-    fields?: Record<
-      string,
-      {
-        stringValue?: string;
-        booleanValue?: boolean;
-        integerValue?: string;
-      }
-    >;
+    fields?: Record<string, Record<string, unknown>>;
   };
 
-  const fields = data.fields || {};
-  const getString = (key: string) => fields[key]?.stringValue;
-  const getAdminRaw = (key: string): unknown => {
-    const field = fields[key];
-    if (!field) return undefined;
-    if (typeof field.booleanValue === "boolean") return field.booleanValue;
-    if (field.stringValue !== undefined) return field.stringValue;
-    if (field.integerValue !== undefined) return Number(field.integerValue);
-    return undefined;
-  };
+  const { getString, getAdminRaw } = parseFirestoreFields(data.fields);
 
   return {
     uid,

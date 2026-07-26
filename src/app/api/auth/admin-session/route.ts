@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { signAdminToken } from "@/lib/auth";
-import { resolveAdminFromBearer } from "@/lib/firebase/admin-check";
+import {
+  getUserProfileWithToken,
+  isAdminFlag,
+} from "@/lib/firebase/admin-check";
+import { verifyFirebaseIdToken } from "@/lib/firebase/verify-token";
 
 export const runtime = "edge";
 
@@ -16,34 +20,76 @@ function clearCookie(res: NextResponse) {
 
 /** Exchange a Firebase ID token for an admin session cookie — only if Firestore isAdmin is yes/true. */
 export async function POST(req: Request) {
-  const admin = await resolveAdminFromBearer(req.headers.get("authorization"));
-  if (!admin) {
+  try {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    if (!token) {
+      return NextResponse.json({ error: "Missing token", step: "token" }, { status: 401 });
+    }
+
+    const verified = await verifyFirebaseIdToken(token);
+    if (!verified) {
+      return NextResponse.json({ error: "Invalid Firebase token", step: "verify" }, { status: 401 });
+    }
+
+    const profile = await getUserProfileWithToken(verified.uid, token);
+    if (!profile) {
+      return NextResponse.json(
+        {
+          error: `No Firestore users/${verified.uid} doc (or read blocked by rules)`,
+          step: "profile",
+          uid: verified.uid,
+        },
+        { status: 403 }
+      );
+    }
+
+    if (!isAdminFlag(profile.isAdmin)) {
+      return NextResponse.json(
+        {
+          error: "isAdmin is not true on this user doc",
+          step: "isAdmin",
+          uid: verified.uid,
+          isAdmin: profile.isAdmin ?? null,
+        },
+        { status: 403 }
+      );
+    }
+
+    const jwt = await signAdminToken({
+      id: verified.uid,
+      email: verified.email || profile.email || "",
+      role: "ADMIN",
+    });
+
+    const res = NextResponse.json({
+      success: true,
+      admin: {
+        id: verified.uid,
+        email: verified.email || profile.email || "",
+        username: profile.username || "admin",
+        role: "ADMIN",
+      },
+    });
+
+    res.cookies.set("admin_token", jwt, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return res;
+  } catch (err) {
     return NextResponse.json(
-      { error: "Not an admin account. In Firestore users/{uid} set isAdmin to true (boolean) or yes." },
-      { status: 403 }
+      {
+        error: err instanceof Error ? err.message : "Admin session failed",
+        step: "exception",
+      },
+      { status: 500 }
     );
   }
-
-  const token = await signAdminToken({
-    id: admin.uid,
-    email: admin.email,
-    role: "ADMIN",
-  });
-
-  const res = NextResponse.json({
-    success: true,
-    admin: { id: admin.uid, email: admin.email, username: admin.username, role: "ADMIN" },
-  });
-
-  res.cookies.set("admin_token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  });
-
-  return res;
 }
 
 export async function DELETE() {
