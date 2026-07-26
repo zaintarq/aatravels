@@ -1,11 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, Moon, Sun, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { useTheme } from "@/components/layout/theme-provider";
 import { useAuth } from "@/components/auth/auth-provider";
 import { cn } from "@/lib/utils";
@@ -15,6 +13,7 @@ const links = [
   { href: "/hotels", label: "Hotels" },
   { href: "/transport", label: "Transport" },
   { href: "/umrah-packages", label: "Umrah Packages" },
+  { href: "/visit-visa", label: "Visit Visa" },
   { href: "/services", label: "Services" },
   { href: "/contact", label: "Contact" },
 ];
@@ -28,16 +27,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink-900/10 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-ink-900/95">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <Image
-            src="/images/aa-travel-group-logo.png"
-            alt="AA Group Travels"
-            width={160}
-            height={160}
-            priority
-            className="h-16 w-auto object-contain"
-          />
-        </Link>
+        <BrandLogo />
 
         <div className="hidden items-center gap-7 lg:flex">
           {links.map((l) => (

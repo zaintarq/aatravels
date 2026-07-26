@@ -39,6 +39,28 @@ export const contactSchema = z.object({
 });
 export type ContactInput = z.infer<typeof contactSchema>;
 
+export const visaEnquirySchema = z.object({
+  fullName: z.string().min(2, "Please enter your full name"),
+  email: z.string().email("Please enter a valid email"),
+  whatsapp: z.string().min(7, "Please enter a valid WhatsApp number"),
+  passportCountry: z.string().min(2, "Please enter your passport country"),
+  visaCountry: z.enum([
+    "malaysia",
+    "thailand",
+    "singapore",
+    "indonesia",
+    "uzbekistan",
+    "tajikistan",
+    "cambodia",
+    "baku",
+    "kenya",
+    "nepal",
+  ]),
+  travelDates: z.string().optional(),
+  message: z.string().optional(),
+});
+export type VisaEnquiryInput = z.infer<typeof visaEnquirySchema>;
+
 export const adminLoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),

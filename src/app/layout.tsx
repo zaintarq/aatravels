@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -7,12 +7,12 @@ import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
 
-const display = Cormorant_Garamond({
+const display = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-display",
   weight: ["400", "500", "600", "700"],
 });
-const body = Manrope({
+const body = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["400", "500", "600", "700"],

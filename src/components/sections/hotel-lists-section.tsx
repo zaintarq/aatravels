@@ -12,6 +12,7 @@ import {
   type HotelCategoryKey,
   type HotelCity,
 } from "@/data/hotel-listings";
+import { hotelListingKey } from "@/lib/hotel-listing-key";
 
 type Listing = {
   id?: string;
@@ -21,11 +22,13 @@ type Listing = {
 };
 
 function groupByCategory(listings: Listing[], city: HotelCity) {
-  return CATEGORY_ORDER[city].map((key) => ({
-    key,
-    title: CATEGORY_LABELS[city][key] || key,
-    hotels: listings.filter((l) => l.city === city && l.category === key).map((l) => l.name),
-  })).filter((g) => g.hotels.length > 0);
+  return CATEGORY_ORDER[city]
+    .map((key) => ({
+      key,
+      title: CATEGORY_LABELS[city][key] || key,
+      hotels: listings.filter((l) => l.city === city && l.category === key).map((l) => l.name),
+    }))
+    .filter((g) => g.hotels.length > 0);
 }
 
 function CityAccordion({
@@ -79,11 +82,16 @@ function CityAccordion({
 
 export function HotelListsSection() {
   const [extra, setExtra] = useState<Listing[]>([]);
+  const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    getDocs(query(collection(getClientDb(), "hotelListings"), orderBy("createdAt", "desc")))
-      .then((snap) => {
-        const rows: Listing[] = snap.docs.map((d) => {
+    const db = getClientDb();
+    Promise.all([
+      getDocs(query(collection(db, "hotelListings"), orderBy("createdAt", "desc"))),
+      getDocs(collection(db, "hotelHidden")),
+    ])
+      .then(([listingsSnap, hiddenSnap]) => {
+        const rows: Listing[] = listingsSnap.docs.map((d) => {
           const data = d.data();
           return {
             id: d.id,
@@ -93,8 +101,12 @@ export function HotelListsSection() {
           };
         });
         setExtra(rows);
+        setHiddenKeys(new Set(hiddenSnap.docs.map((d) => String(d.data().key || d.id))));
       })
-      .catch(() => setExtra([]));
+      .catch(() => {
+        setExtra([]);
+        setHiddenKeys(new Set());
+      });
   }, []);
 
   const all = useMemo(() => {
@@ -102,17 +114,20 @@ export function HotelListsSection() {
       ...h,
       id: `seed-${i}`,
     }));
-    // Firebase extras first so new admin hotels show, then seed (dedupe by name+city)
+
     const seen = new Set<string>();
     const merged: Listing[] = [];
+
     for (const item of [...extra, ...seeded]) {
-      const key = `${item.city}:${item.name.toLowerCase()}`;
+      const key = hotelListingKey(item.city, item.name);
+      if (hiddenKeys.has(key)) continue;
       if (seen.has(key)) continue;
       seen.add(key);
       merged.push(item);
     }
+
     return merged;
-  }, [extra]);
+  }, [extra, hiddenKeys]);
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

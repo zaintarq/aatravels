@@ -19,6 +19,8 @@ export const COLLECTIONS = {
   testimonials: "testimonials",
   newsletterSubscribers: "newsletterSubscribers",
   mail: "mail",
+  visaEnquiries: "visaEnquiries",
+  hotelHidden: "hotelHidden",
 } as const;
 
 export async function createEnquiry(data: Record<string, unknown>) {
@@ -31,6 +33,10 @@ export async function createContact(data: Record<string, unknown>) {
 
 export async function createTravelAgent(data: Record<string, unknown>) {
   return restAddDocument(COLLECTIONS.travelAgents, { ...data, status: "PENDING" });
+}
+
+export async function createVisaEnquiry(data: Record<string, unknown>) {
+  return restAddDocument(COLLECTIONS.visaEnquiries, data);
 }
 
 export async function createReview(data: {

@@ -5,7 +5,7 @@ import { getAllPackages } from "@/data/packages";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.aatravelgroup.co.uk";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["", "/hotels", "/transport", "/umrah-packages", "/services", "/contact"].map(
+  const staticRoutes = ["", "/hotels", "/transport", "/umrah-packages", "/visit-visa", "/services", "/contact"].map(
     (path) => ({
       url: `${siteUrl}${path}`,
       lastModified: new Date(),

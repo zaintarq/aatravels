@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const cards = [
-  { href: "/admin/dashboard/hotels", title: "Hotels", desc: "Add hotel names to Makkah & Madinah lists" },
+  { href: "/admin/dashboard/hotels", title: "Hotels", desc: "Add or remove hotel names on Makkah & Madinah lists" },
   { href: "/admin/dashboard/packages", title: "Packages & Deals", desc: "Create Umrah packages and special offers" },
 ];
 

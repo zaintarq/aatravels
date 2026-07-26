@@ -25,16 +25,16 @@ export function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-maroon-200"
+          className="mb-4 font-brand text-xs font-semibold uppercase tracking-[0.35em] text-maroon-200"
         >
-          AA Travel Group &middot; Makkah &amp; Madinah
+          AA Group Travels &middot; Makkah &amp; Madinah
         </motion.p>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-display text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl"
+          className="font-display text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
         >
           Hotels and Transport for Your <span className="text-maroon-200">Umrah</span> Journey
         </motion.h1>

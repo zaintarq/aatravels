@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Facebook, Instagram } from "lucide-react";
 import { StarDivider } from "@/components/ui/star-divider";
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { SOCIAL_LINKS } from "@/lib/social";
 
 export function Footer() {
@@ -10,13 +10,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
-            <Image
-              src="/images/aa-travel-group-logo.png"
-              alt="AA Group Travels"
-              width={180}
-              height={180}
-              className="h-24 w-auto rounded-lg bg-white object-contain p-1"
-            />
+            <BrandLogo showWordmark imageClassName="h-20" />
             <p className="mt-3 text-sm text-white/60">
               Hotel stays and transport services in Makkah &amp; Madinah for families and groups.
             </p>
@@ -67,6 +61,7 @@ export function Footer() {
               <li><Link href="/hotels" className="hover:text-white">Hotels</Link></li>
               <li><Link href="/transport" className="hover:text-white">Transport</Link></li>
               <li><Link href="/umrah-packages" className="hover:text-white">Umrah Packages</Link></li>
+              <li><Link href="/visit-visa" className="hover:text-white">Visit Visa</Link></li>
               <li><Link href="/services" className="hover:text-white">Services</Link></li>
             </ul>
           </div>

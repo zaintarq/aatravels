@@ -45,6 +45,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
+        brand: ["var(--font-body)", "system-ui", "sans-serif"],
       },
       keyframes: {
         "fade-up": {
