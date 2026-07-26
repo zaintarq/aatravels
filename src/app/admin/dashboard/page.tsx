@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 const cards = [
   { href: "/admin/dashboard/hotels", title: "Hotels", desc: "Add or remove hotel names on Makkah & Madinah lists" },
   { href: "/admin/dashboard/packages", title: "Packages & Deals", desc: "Add or remove Umrah packages and special offers" },
+  { href: "/admin/dashboard/enquiries", title: "Enquiries", desc: "View and manage general enquiries" },
+  { href: "/admin/dashboard/visa-enquiries", title: "Visa Enquiries", desc: "View and manage visa enquiries" },
+  { href: "/admin/dashboard/newsletter", title: "Newsletter", desc: "View and manage newsletter subscribers" },
 ];
 
 export default function AdminDashboardPage() {
@@ -37,7 +40,7 @@ export default function AdminDashboardPage() {
         </Button>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <Link
             key={c.href}

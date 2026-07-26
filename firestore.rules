@@ -46,17 +46,17 @@ service cloud.firestore {
 
     match /enquiries/{id} {
       allow create: if true;
-      allow read, update: if false;
+      allow read, update, delete: if isAdmin();
     }
 
     match /contacts/{id} {
       allow create: if true;
-      allow read, update: if false;
+      allow read, update, delete: if isAdmin();
     }
 
     match /travelAgents/{id} {
       allow create: if true;
-      allow read, update: if false;
+      allow read, update, delete: if isAdmin();
     }
 
     match /reviews/{id} {
