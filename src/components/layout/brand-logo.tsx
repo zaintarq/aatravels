@@ -28,7 +28,7 @@ export function BrandLogo({
         className={cn("h-14 w-auto shrink-0 object-contain sm:h-16", imageClassName)}
       />
       {showWordmark && (
-        <span className="hidden min-w-0 flex-col leading-none sm:flex">
+        <span className="flex min-w-0 flex-col leading-none">
           <span className={cn("font-brand text-lg font-semibold tracking-tight", lightTextColor ? "text-white" : "text-ink-900 dark:text-white")}>
             AA Group
           </span>
