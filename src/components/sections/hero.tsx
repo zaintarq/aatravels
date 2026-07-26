@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Search, Car } from "lucide-react";
+import { Building2, MessageCircle, ArrowRight } from "lucide-react";
 
 export function Hero() {
   return (
@@ -54,16 +54,16 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
-          <Button variant="gold" size="lg" asChild>
-            <Link href="/hotels"><Search size={18} /> Search Hotels</Link>
+          <Button variant="primary" size="lg" className="rounded-lg bg-maroon-500 hover:bg-maroon-600" asChild>
+            <Link href="/hotels"><Building2 size={18} /> Hotels</Link>
           </Button>
-          <Button variant="whatsapp" size="lg" asChild>
+          <Button variant="primary" size="lg" className="rounded-lg bg-maroon-500 hover:bg-maroon-600" asChild>
             <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
               <MessageCircle size={18} /> WhatsApp
             </a>
           </Button>
-          <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10" asChild>
-            <Link href="/transport"><Car size={18} /> Transport</Link>
+          <Button variant="primary" size="lg" className="rounded-lg bg-maroon-500 hover:bg-maroon-600" asChild>
+            <Link href="/transport"><ArrowRight size={18} /> Transport</Link>
           </Button>
         </motion.div>
       </div>
