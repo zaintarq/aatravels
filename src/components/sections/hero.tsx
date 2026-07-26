@@ -54,15 +54,15 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-3"
         >
-          <Button variant="primary" size="lg" className="rounded-lg bg-maroon-500 hover:bg-maroon-600" asChild>
+          <Button size="lg" className="rounded-lg !bg-gold-400 !text-maroon-900 hover:!bg-gold-300" asChild>
             <Link href="/hotels"><Building2 size={18} /> Hotels</Link>
           </Button>
-          <Button variant="primary" size="lg" className="rounded-lg bg-maroon-500 hover:bg-maroon-600" asChild>
+          <Button size="lg" className="rounded-lg !bg-gold-400 !text-maroon-900 hover:!bg-gold-300" asChild>
             <a href="https://wa.me/447900007023" target="_blank" rel="noopener noreferrer">
               <MessageCircle size={18} /> WhatsApp
             </a>
           </Button>
-          <Button variant="primary" size="lg" className="rounded-lg bg-maroon-500 hover:bg-maroon-600" asChild>
+          <Button size="lg" className="rounded-lg !bg-gold-400 !text-maroon-900 hover:!bg-gold-300" asChild>
             <Link href="/transport"><ArrowRight size={18} /> Transport</Link>
           </Button>
         </motion.div>
