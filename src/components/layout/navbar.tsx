@@ -29,7 +29,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink-900/10 bg-white/90 backdrop-blur dark:border-white/10 dark:bg-ink-900/95">
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <BrandLogo showWordmark={false} />
+        <BrandLogo showWordmark={true} imageClassName="hidden" />
 
         <div className="hidden items-center gap-7 lg:flex">
           {links.map((l) => (
