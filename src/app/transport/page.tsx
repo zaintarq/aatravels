@@ -46,7 +46,7 @@ export default function TransportPage() {
     <div>
       <section className="bg-ink-900 px-4 py-24 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-400">AA Group Travels transport</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-400">AA Travel Group transport</p>
           <h1 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">Transport for Makkah &amp; Madinah</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/70">
             Reliable airport, city and intercity transport for Umrah travellers, families and groups.

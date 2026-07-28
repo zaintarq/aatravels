@@ -27,7 +27,7 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-4 font-brand text-xs font-semibold uppercase tracking-[0.35em] text-maroon-200"
         >
-          AA Group Travels &middot; Makkah &amp; Madinah
+          AA Travel Group &middot; Makkah &amp; Madinah
         </motion.p>
 
         <motion.h1

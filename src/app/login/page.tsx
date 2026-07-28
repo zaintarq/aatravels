@@ -54,7 +54,7 @@ export default function LoginPage() {
         <div className="mb-8 flex flex-col items-center text-center">
           <Image
             src="/images/aa-travel-group-logo.png"
-            alt="AA Group Travels"
+            alt="AA Travel Group"
             width={120}
             height={120}
             className="h-20 w-auto object-contain"

@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage() {
 
         <h2>1. Introduction</h2>
         <p>
-          AA Group Travels ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our travel services, website, or contact us.
+          AA Travel Group ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our travel services, website, or contact us.
         </p>
 
         <h2>2. Information We Collect</h2>

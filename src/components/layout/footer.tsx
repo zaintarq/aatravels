@@ -76,7 +76,7 @@ export function Footer() {
         </div>
         <StarDivider className="my-10 opacity-60" />
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-white/50 sm:flex-row">
-          <p>&copy; {new Date().getFullYear()} AA Group Travels. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} AA Travel Group. All rights reserved.</p>
           <p>Registered Travel Company &mdash; England &amp; Wales</p>
         </div>
       </div>

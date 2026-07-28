@@ -4,14 +4,14 @@ import { HotelListsSection } from "@/components/sections/hotel-lists-section";
 
 export const metadata: Metadata = {
   title: "Hotels in Makkah & Madinah",
-  description: "Browse AA Group Travels hotel options in Makkah and Madinah.",
+  description: "Browse AA Travel Group hotel options in Makkah and Madinah.",
 };
 
 export default function HotelsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">AA Group Travels hotels</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">AA Travel Group hotels</p>
         <h1 className="mt-3 font-display text-4xl font-semibold text-ink-900 dark:text-white">
           Hotels in Makkah &amp; Madinah
         </h1>

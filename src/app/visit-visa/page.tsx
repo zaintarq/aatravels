@@ -6,7 +6,7 @@ import { VISIT_VISA_COUNTRIES } from "@/data/visit-visa-countries";
 export const metadata: Metadata = {
   title: "Visit Visa",
   description:
-    "Apply for visit visas to Malaysia, Thailand, Singapore, Indonesia, Uzbekistan, Tajikistan, Cambodia, Baku, Kenya, Nepal and more with AA Group Travels.",
+    "Apply for visit visas to Malaysia, Thailand, Singapore, Indonesia, Uzbekistan, Tajikistan, Cambodia, Baku, Kenya, Nepal and more with AA Travel Group.",
 };
 
 const highlights = [

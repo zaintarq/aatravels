@@ -8,7 +8,7 @@ export default function TermsPage() {
 
         <h2>1. Introduction</h2>
         <p>
-          Welcome to AA Group Travels. These Terms &amp; Conditions govern your use of our travel services for hotel bookings, transport arrangements, and Umrah packages. By booking with us, you agree to these terms.
+          Welcome to AA Travel Group. These Terms &amp; Conditions govern your use of our travel services for hotel bookings, transport arrangements, and Umrah packages. By booking with us, you agree to these terms.
         </p>
 
         <h2>2. Booking and Payment</h2>
