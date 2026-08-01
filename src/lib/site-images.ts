@@ -47,6 +47,10 @@ export const sitePromoImages = [
     src: "/images/private-transport.png",
     alt: "Private transport with AA Travel Group",
   },
+  {
+    src: "/images/group-transport.png",
+    alt: "Group transport and airport transfers with AA Travel Group",
+  },
 ] as const;
 
 /** Pick images for cards — cycles through the pool so each card gets a different photo. */

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Airport transfers, intercity transport and private group transport in Makkah and Madinah.",
 };
 
-const [t0, , t2, , t4, t5] = cardImages(6, 0);
+const [t0, , , , t4, t5] = cardImages(6, 0);
 
 const transportServices = [
   {
@@ -33,7 +33,10 @@ const transportServices = [
     icon: Users,
     title: "Group Transport",
     description: "Vehicle arrangements for families, agents and larger pilgrim groups travelling together.",
-    image: t2,
+    image: {
+      src: "/images/group-transport.png",
+      alt: "Group transport and airport transfers with AA Travel Group",
+    },
   },
   {
     icon: Car,
