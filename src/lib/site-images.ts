@@ -27,6 +27,10 @@ export const sitePromoImages = [
     src: "/images/hotels/madinah-hotels-selection.jpeg",
     alt: "Hotels near the Prophet's Mosque in Madinah",
   },
+  {
+    src: "/images/airport-transport-car.png",
+    alt: "Private VIP transport vehicle",
+  },
 ] as const;
 
 /** Pick images for cards — cycles through the pool so each card gets a different photo. */

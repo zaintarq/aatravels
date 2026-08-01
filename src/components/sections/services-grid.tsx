@@ -16,7 +16,10 @@ const services = [
     icon: Car,
     title: "Airport & VIP Transport",
     desc: "Reliable transfers and private VIP transport for individuals and groups.",
-    image: img1,
+    image: {
+      src: "/images/airport-transport-car.png",
+      alt: "Private VIP transport vehicle",
+    },
   },
   {
     icon: Users,
