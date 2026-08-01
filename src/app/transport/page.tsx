@@ -58,7 +58,7 @@ const transportServices = [
     title: "Journey Support",
     description: "Helpful coordination before travel so guests know where to meet and what to expect.",
     image: {
-      src: "/images/journey-support.png",
+      src: "/images/journey-support.jpg",
       alt: "Journey support and airport transfers with AA Travel Group",
     },
   },
