@@ -1,5 +1,9 @@
 export const sitePromoImages = [
   {
+    src: "/images/hotel-bookings.jpg",
+    alt: "Hotels near the Haram in Makkah",
+  },
+  {
     src: "/images/hero-makkah.png",
     alt: "Masjid al-Haram, Makkah",
   },

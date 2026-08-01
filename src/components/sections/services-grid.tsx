@@ -3,14 +3,17 @@ import { FeatureCard } from "@/components/sections/feature-card";
 import { StarDivider } from "@/components/ui/star-divider";
 import { cardImages } from "@/lib/site-images";
 
-const [img0, , img2, img3] = cardImages(6, 2);
+const [, , img2, img3] = cardImages(6, 2);
 
 const services = [
   {
     icon: BedDouble,
     title: "Hotel Bookings",
     desc: "3, 4 and 5-star hotels plus luxury suites across Makkah & Madinah.",
-    image: img0,
+    image: {
+      src: "/images/hotel-bookings.jpg",
+      alt: "Hotels near the Haram in Makkah",
+    },
   },
   {
     icon: Car,
