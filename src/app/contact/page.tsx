@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { MessageCircle, Mail, Clock3, MapPin, Facebook, Instagram } from "lucide-react";
+import { PageHero } from "@/components/sections/page-hero";
 import { QuoteForm } from "@/components/sections/quote-form";
 import { Button } from "@/components/ui/button";
 import { SOCIAL_LINKS } from "@/lib/social";
@@ -18,18 +20,28 @@ const points = [
 export default function ContactPage() {
   return (
     <div>
-      <section className="relative overflow-hidden bg-ink-900 px-4 py-20 text-white sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-gradient-to-br from-maroon-900/40 via-transparent to-ink-900" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-200">Get in touch</p>
-          <h1 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">Request your Umrah quotation</h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/70">
-            Tell us your dates, guests and preferences — we&apos;ll prepare hotel and transport options for your journey.
-          </p>
+      <PageHero
+        eyebrow="Get in touch"
+        title="Request your Umrah quotation"
+        description="Tell us your dates, guests and preferences — we'll prepare hotel and transport options for your journey."
+      />
+
+      <section className="bg-cream py-10 dark:bg-ink-800 sm:py-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-2xl border border-ink-900/10 bg-white shadow-sm dark:border-white/10 dark:bg-ink-900">
+            <Image
+              src="/images/contact-banner.png"
+              alt="Book your tickets, visas and hotels with AA Travel Group at lowest fares"
+              width={1024}
+              height={556}
+              className="h-auto w-full object-cover"
+              priority
+            />
+          </div>
         </div>
       </section>
 
-      <section className="bg-cream py-16 dark:bg-ink-800">
+      <section className="bg-cream pb-16 pt-4 dark:bg-ink-800">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14 lg:px-8">
           <aside className="space-y-8">
             <div>
