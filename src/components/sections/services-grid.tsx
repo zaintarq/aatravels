@@ -3,7 +3,7 @@ import { FeatureCard } from "@/components/sections/feature-card";
 import { StarDivider } from "@/components/ui/star-divider";
 import { cardImages } from "@/lib/site-images";
 
-const [img0, img1, img2, img3, img4, img5] = cardImages(6, 2);
+const [img0, , img2, img3] = cardImages(6, 2);
 
 const services = [
   {
@@ -46,7 +46,10 @@ const services = [
     icon: Sparkles,
     title: "Customised Packages",
     desc: "Bespoke itineraries built around your dates, budget and group size.",
-    image: img5,
+    image: {
+      src: "/images/customised-packages.png",
+      alt: "Customised Umrah packages with AA Travel Group",
+    },
   },
 ];
 

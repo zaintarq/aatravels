@@ -35,6 +35,10 @@ export const sitePromoImages = [
     src: "/images/air-tickets-promo.png",
     alt: "AA Travel Group air tickets and flights",
   },
+  {
+    src: "/images/customised-packages.png",
+    alt: "Customised Umrah packages with AA Travel Group",
+  },
 ] as const;
 
 /** Pick images for cards — cycles through the pool so each card gets a different photo. */
