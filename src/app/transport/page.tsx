@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Airport transfers, intercity transport and private group transport in Makkah and Madinah.",
 };
 
-const [t0, t1, t2, t3, t4, t5] = cardImages(6, 0);
+const [t0, , t2, t3, t4, t5] = cardImages(6, 0);
 
 const transportServices = [
   {
@@ -24,7 +24,10 @@ const transportServices = [
     icon: MapPin,
     title: "Makkah to Madinah",
     description: "Private and group transfers between the two holy cities with clear journey coordination.",
-    image: t1,
+    image: {
+      src: "/images/makkah-madinah-transport.png",
+      alt: "Luxury transport between Makkah and Madinah",
+    },
   },
   {
     icon: Users,

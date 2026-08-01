@@ -39,6 +39,10 @@ export const sitePromoImages = [
     src: "/images/customised-packages.png",
     alt: "Customised Umrah packages with AA Travel Group",
   },
+  {
+    src: "/images/makkah-madinah-transport.png",
+    alt: "Luxury transport between Makkah and Madinah",
+  },
 ] as const;
 
 /** Pick images for cards — cycles through the pool so each card gets a different photo. */
