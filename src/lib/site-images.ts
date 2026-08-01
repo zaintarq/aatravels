@@ -43,6 +43,10 @@ export const sitePromoImages = [
     src: "/images/makkah-madinah-transport.png",
     alt: "Luxury transport between Makkah and Madinah",
   },
+  {
+    src: "/images/private-transport.png",
+    alt: "Private transport with AA Travel Group",
+  },
 ] as const;
 
 /** Pick images for cards — cycles through the pool so each card gets a different photo. */
