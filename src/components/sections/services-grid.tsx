@@ -20,8 +20,8 @@ const services = [
     title: "Airport & VIP Transport",
     desc: "Reliable transfers and private VIP transport for individuals and groups.",
     image: {
-      src: "/images/airport-transport-car.png",
-      alt: "Private VIP transport vehicle",
+      src: "/images/airport-vip-transport.jpg",
+      alt: "Airport and VIP transport with AA Travel Group",
     },
   },
   {

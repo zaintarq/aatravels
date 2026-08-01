@@ -32,6 +32,10 @@ export const sitePromoImages = [
     alt: "Hotels near the Prophet's Mosque in Madinah",
   },
   {
+    src: "/images/airport-vip-transport.jpg",
+    alt: "Airport and VIP transport with AA Travel Group",
+  },
+  {
     src: "/images/airport-transport-car.png",
     alt: "Private VIP transport vehicle",
   },
