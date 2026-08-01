@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Car, Plane, Users, ShieldCheck, Clock, MapPin } from "lucide-react";
+import { FeatureCard } from "@/components/sections/feature-card";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
+import { sitePromoImages } from "@/lib/site-images";
 
 export const metadata: Metadata = {
   title: "Transport",
@@ -14,31 +16,37 @@ const transportServices = [
     icon: Plane,
     title: "Airport Transfers",
     description: "Pickup and drop-off support for Jeddah, Madinah and nearby airport journeys.",
+    image: sitePromoImages[2],
   },
   {
     icon: MapPin,
     title: "Makkah to Madinah",
     description: "Private and group transfers between the two holy cities with clear journey coordination.",
+    image: sitePromoImages[0],
   },
   {
     icon: Users,
     title: "Group Transport",
     description: "Vehicle arrangements for families, agents and larger pilgrim groups travelling together.",
+    image: sitePromoImages[1],
   },
   {
     icon: Car,
     title: "Private Vehicles",
     description: "Comfortable private transport options for flexible schedules and direct routes.",
+    image: sitePromoImages[3],
   },
   {
     icon: Clock,
     title: "Timed Pickups",
     description: "Planned pickups for hotel check-in, airport departures and itinerary movements.",
+    image: sitePromoImages[4],
   },
   {
     icon: ShieldCheck,
     title: "Journey Support",
     description: "Helpful coordination before travel so guests know where to meet and what to expect.",
+    image: sitePromoImages[0],
   },
 ];
 
@@ -88,16 +96,14 @@ export default function TransportPage() {
 
           <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {transportServices.map((service) => (
-              <div
+              <FeatureCard
                 key={service.title}
-                className="rounded-2xl border border-ink-900/10 bg-white p-8 dark:border-white/10 dark:bg-ink-900"
-              >
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-500/10 text-maroon-500">
-                  <service.icon size={22} />
-                </div>
-                <h3 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{service.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-400 dark:text-white/60">{service.description}</p>
-              </div>
+                title={service.title}
+                description={service.description}
+                imageSrc={service.image.src}
+                imageAlt={service.image.alt}
+                icon={service.icon}
+              />
             ))}
           </div>
         </div>

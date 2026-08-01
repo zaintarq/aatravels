@@ -1,13 +1,45 @@
 import { BedDouble, Car, Users, Building2, Plane, Sparkles } from "lucide-react";
+import { FeatureCard } from "@/components/sections/feature-card";
 import { StarDivider } from "@/components/ui/star-divider";
+import { sitePromoImages } from "@/lib/site-images";
 
 const services = [
-  { icon: BedDouble, title: "Hotel Bookings", desc: "3, 4 and 5-star hotels plus luxury suites across Makkah & Madinah." },
-  { icon: Car, title: "Airport & VIP Transport", desc: "Reliable transfers and private VIP transport for individuals and groups." },
-  { icon: Users, title: "Group & Corporate Bookings", desc: "Tailored allocations for large groups and corporate travel programmes." },
-  { icon: Building2, title: "Umrah Packages", desc: "Ready-made and fully customised Umrah packages for every budget." },
-  { icon: Plane, title: "Air Tickets", desc: "Competitive fares sourced through trusted airline and supplier networks." },
-  { icon: Sparkles, title: "Customised Packages", desc: "Bespoke itineraries built around your dates, budget and group size." },
+  {
+    icon: BedDouble,
+    title: "Hotel Bookings",
+    desc: "3, 4 and 5-star hotels plus luxury suites across Makkah & Madinah.",
+    image: sitePromoImages[0],
+  },
+  {
+    icon: Car,
+    title: "Airport & VIP Transport",
+    desc: "Reliable transfers and private VIP transport for individuals and groups.",
+    image: sitePromoImages[2],
+  },
+  {
+    icon: Users,
+    title: "Group & Corporate Bookings",
+    desc: "Tailored allocations for large groups and corporate travel programmes.",
+    image: sitePromoImages[1],
+  },
+  {
+    icon: Building2,
+    title: "Umrah Packages",
+    desc: "Ready-made and fully customised Umrah packages for every budget.",
+    image: sitePromoImages[3],
+  },
+  {
+    icon: Plane,
+    title: "Air Tickets",
+    desc: "Competitive fares sourced through trusted airline and supplier networks.",
+    image: sitePromoImages[4],
+  },
+  {
+    icon: Sparkles,
+    title: "Customised Packages",
+    desc: "Bespoke itineraries built around your dates, budget and group size.",
+    image: sitePromoImages[2],
+  },
 ];
 
 export function ServicesGrid() {
@@ -24,16 +56,14 @@ export function ServicesGrid() {
 
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
-            <div
+            <FeatureCard
               key={s.title}
-              className="group rounded-2xl border border-ink-900/10 bg-white p-8 transition-shadow hover:shadow-lg hover:shadow-maroon-500/5 dark:border-white/10 dark:bg-ink-900"
-            >
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-maroon-500/10 text-maroon-500 transition-colors group-hover:bg-maroon-500 group-hover:text-white">
-                <s.icon size={22} />
-              </div>
-              <h3 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-400 dark:text-white/60">{s.desc}</p>
-            </div>
+              title={s.title}
+              description={s.desc}
+              imageSrc={s.image.src}
+              imageAlt={s.image.alt}
+              icon={s.icon}
+            />
           ))}
         </div>
       </div>
