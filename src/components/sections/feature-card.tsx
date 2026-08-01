@@ -12,7 +12,7 @@ type FeatureCardProps = {
 export function FeatureCard({ title, description, imageSrc, imageAlt, icon: Icon }: FeatureCardProps) {
   return (
     <div className="group overflow-hidden rounded-2xl border border-ink-900/10 bg-white transition-shadow hover:shadow-lg hover:shadow-maroon-500/5 dark:border-white/10 dark:bg-ink-900">
-      <div className="relative h-44 w-full overflow-hidden">
+      <div className="relative h-52 w-full overflow-hidden sm:h-56">
         <Image
           src={imageSrc}
           alt={imageAlt}

@@ -1,44 +1,46 @@
 import { BedDouble, Car, Users, Building2, Plane, Sparkles } from "lucide-react";
 import { FeatureCard } from "@/components/sections/feature-card";
 import { StarDivider } from "@/components/ui/star-divider";
-import { sitePromoImages } from "@/lib/site-images";
+import { cardImages } from "@/lib/site-images";
+
+const [img0, img1, img2, img3, img4, img5] = cardImages(6, 2);
 
 const services = [
   {
     icon: BedDouble,
     title: "Hotel Bookings",
     desc: "3, 4 and 5-star hotels plus luxury suites across Makkah & Madinah.",
-    image: sitePromoImages[0],
+    image: img0,
   },
   {
     icon: Car,
     title: "Airport & VIP Transport",
     desc: "Reliable transfers and private VIP transport for individuals and groups.",
-    image: sitePromoImages[2],
+    image: img1,
   },
   {
     icon: Users,
     title: "Group & Corporate Bookings",
     desc: "Tailored allocations for large groups and corporate travel programmes.",
-    image: sitePromoImages[1],
+    image: img2,
   },
   {
     icon: Building2,
     title: "Umrah Packages",
     desc: "Ready-made and fully customised Umrah packages for every budget.",
-    image: sitePromoImages[3],
+    image: img3,
   },
   {
     icon: Plane,
     title: "Air Tickets",
     desc: "Competitive fares sourced through trusted airline and supplier networks.",
-    image: sitePromoImages[4],
+    image: img4,
   },
   {
     icon: Sparkles,
     title: "Customised Packages",
     desc: "Bespoke itineraries built around your dates, budget and group size.",
-    image: sitePromoImages[2],
+    image: img5,
   },
 ];
 

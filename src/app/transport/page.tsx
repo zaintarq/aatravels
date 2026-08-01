@@ -4,49 +4,51 @@ import { Car, Plane, Users, ShieldCheck, Clock, MapPin } from "lucide-react";
 import { FeatureCard } from "@/components/sections/feature-card";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
-import { sitePromoImages } from "@/lib/site-images";
+import { cardImages } from "@/lib/site-images";
 
 export const metadata: Metadata = {
   title: "Transport",
   description: "Airport transfers, intercity transport and private group transport in Makkah and Madinah.",
 };
 
+const [t0, t1, t2, t3, t4, t5] = cardImages(6, 0);
+
 const transportServices = [
   {
     icon: Plane,
     title: "Airport Transfers",
     description: "Pickup and drop-off support for Jeddah, Madinah and nearby airport journeys.",
-    image: sitePromoImages[2],
+    image: t0,
   },
   {
     icon: MapPin,
     title: "Makkah to Madinah",
     description: "Private and group transfers between the two holy cities with clear journey coordination.",
-    image: sitePromoImages[0],
+    image: t1,
   },
   {
     icon: Users,
     title: "Group Transport",
     description: "Vehicle arrangements for families, agents and larger pilgrim groups travelling together.",
-    image: sitePromoImages[1],
+    image: t2,
   },
   {
     icon: Car,
     title: "Private Vehicles",
     description: "Comfortable private transport options for flexible schedules and direct routes.",
-    image: sitePromoImages[3],
+    image: t3,
   },
   {
     icon: Clock,
     title: "Timed Pickups",
     description: "Planned pickups for hotel check-in, airport departures and itinerary movements.",
-    image: sitePromoImages[4],
+    image: t4,
   },
   {
     icon: ShieldCheck,
     title: "Journey Support",
     description: "Helpful coordination before travel so guests know where to meet and what to expect.",
-    image: sitePromoImages[0],
+    image: t5,
   },
 ];
 

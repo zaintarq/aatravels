@@ -19,4 +19,17 @@ export const sitePromoImages = [
     src: "/images/contact-banner.png",
     alt: "Book tickets, visas and hotels with AA Travel Group",
   },
+  {
+    src: "/images/hotels/makkah-hotels-selection.jpeg",
+    alt: "Hotels near the Haram in Makkah",
+  },
+  {
+    src: "/images/hotels/madinah-hotels-selection.jpeg",
+    alt: "Hotels near the Prophet's Mosque in Madinah",
+  },
 ] as const;
+
+/** Pick images for cards — cycles through the pool so each card gets a different photo. */
+export function cardImages(count: number, offset = 0) {
+  return Array.from({ length: count }, (_, i) => sitePromoImages[(i + offset) % sitePromoImages.length]);
+}
