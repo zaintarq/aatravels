@@ -158,7 +158,7 @@ export default function AdminPackagesPage() {
             />
           </div>
           <div>
-            <Label htmlFor="price">Price from (£)</Label>
+            <Label htmlFor="price">Price from (GBP — shown in visitor&apos;s currency)</Label>
             <Input id="price" type="number" min={0} value={priceFrom} onChange={(e) => setPriceFrom(e.target.value)} />
           </div>
           <div>

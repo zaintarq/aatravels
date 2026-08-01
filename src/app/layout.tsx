@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { CurrencyProvider } from "@/components/layout/currency-provider";
 
 const display = Playfair_Display({
   subsets: ["latin"],
@@ -48,12 +49,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={`${display.variable} ${body.variable} font-body antialiased`}>
         <ThemeProvider>
-          <AuthProvider>
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
-            <WhatsAppButton />
-          </AuthProvider>
+          <CurrencyProvider>
+            <AuthProvider>
+              <Navbar />
+              <main>{children}</main>
+              <Footer />
+              <WhatsAppButton />
+            </AuthProvider>
+          </CurrencyProvider>
         </ThemeProvider>
       </body>
     </html>

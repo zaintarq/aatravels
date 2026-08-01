@@ -6,6 +6,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
 import { getClientDb } from "@/lib/firebase/client";
+import { PriceFrom } from "@/components/ui/price";
 
 type PackageCard = {
   id: string;
@@ -71,7 +72,12 @@ export default function PackagesPage() {
             <h2 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{p.title}</h2>
             <p className="mt-2 text-sm text-ink-400 dark:text-white/60">{p.summary}</p>
             <p className="mt-4 text-sm font-medium text-maroon-500">
-              {p.nights} nights {p.priceFrom ? `\u00b7 from £${p.priceFrom}` : ""}
+              {p.nights} nights{" "}
+              {p.priceFrom != null && (
+                <>
+                  · <PriceFrom amountGbp={p.priceFrom} />
+                </>
+              )}
             </p>
             <Button size="sm" className="mt-4 w-full" asChild>
               <Link href={`/umrah-packages/${p.slug}`}>View Package</Link>

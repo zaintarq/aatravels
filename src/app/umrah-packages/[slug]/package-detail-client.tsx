@@ -8,6 +8,7 @@ import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
 import { getClientDb } from "@/lib/firebase/client";
 import { getPackageBySlug } from "@/data/packages";
+import { PriceFrom } from "@/components/ui/price";
 
 type Pkg = {
   title: string;
@@ -61,7 +62,9 @@ export function PackageDetailClient() {
       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">{pkg.nights} Night Package</p>
       <h1 className="mt-2 font-display text-4xl font-semibold text-ink-900 dark:text-white">{pkg.title}</h1>
       {pkg.priceFrom != null && (
-        <p className="mt-2 text-sm font-medium text-maroon-500">From £{pkg.priceFrom}</p>
+        <p className="mt-2 text-sm font-medium text-maroon-500">
+          <PriceFrom amountGbp={pkg.priceFrom} />
+        </p>
       )}
       <StarDivider className="justify-start" />
       <p className="mt-6 leading-relaxed text-ink-700 dark:text-white/80">{pkg.description}</p>

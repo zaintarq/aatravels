@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, Moon, Sun, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { CurrencySwitcher } from "@/components/layout/currency-switcher";
 import { useTheme } from "@/components/layout/theme-provider";
 import { useAuth } from "@/components/auth/auth-provider";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,7 @@ export function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <CurrencySwitcher />
           <button
             aria-label="Toggle dark mode"
             onClick={toggleTheme}
@@ -105,6 +107,7 @@ export function Navbar() {
                 {l.label}
               </Link>
             ))}
+            <CurrencySwitcher className="pt-2" />
             <div className="flex flex-col gap-3 pt-2">
               {!loading && user ? (
                 <>
