@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import { PageHero } from "@/components/sections/page-hero";
 import { ServicesGrid } from "@/components/sections/services-grid";
-import { StarDivider } from "@/components/ui/star-divider";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <div>
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">Our services</p>
-        <h1 className="mt-3 font-display text-4xl font-semibold text-ink-900 dark:text-white">Everything for your Umrah journey</h1>
-        <StarDivider />
-      </div>
+      <PageHero
+        eyebrow="Our services"
+        title="Everything for your Umrah journey"
+        description="Hotels, transport, packages, visas and full journey support for pilgrims, families and groups."
+      />
       <ServicesGrid />
     </div>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Globe2, FileCheck, Clock3 } from "lucide-react";
+import { PageHero } from "@/components/sections/page-hero";
 import { VisaInquiryForm } from "@/components/sections/visa-inquiry-form";
 import { VISIT_VISA_COUNTRIES } from "@/data/visit-visa-countries";
 
@@ -30,17 +31,11 @@ const highlights = [
 export default function VisitVisaPage() {
   return (
     <div>
-      <section className="relative overflow-hidden bg-ink-900 px-4 py-20 text-white sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-gradient-to-br from-maroon-900/50 via-transparent to-ink-900" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-200">Visit visa services</p>
-          <h1 className="mt-4 font-display text-4xl font-semibold sm:text-5xl">Visit Visa Enquiry</h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/70">
-            Which country&apos;s visa do you need? Choose your destination below and send us your details — we&apos;ll
-            guide you through requirements and processing.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Visit visa services"
+        title="Visit Visa Enquiry"
+        description="Which country's visa do you need? Choose your destination below and send us your details — we'll guide you through requirements and processing."
+      />
 
       <section className="bg-cream py-16 dark:bg-ink-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

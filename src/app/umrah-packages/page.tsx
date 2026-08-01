@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { StarDivider } from "@/components/ui/star-divider";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/sections/page-hero";
 import { getClientDb } from "@/lib/firebase/client";
 import { PriceFrom } from "@/components/ui/price";
 
@@ -46,45 +46,47 @@ export default function PackagesPage() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">Umrah packages</p>
-        <h1 className="mt-3 font-display text-4xl font-semibold text-ink-900 dark:text-white">
-          Ready-made &amp; Customised Packages
-        </h1>
-        <StarDivider />
-      </div>
+    <div>
+      <PageHero
+        eyebrow="Umrah packages"
+        title="Ready-made & Customised Packages"
+        description="Browse our Umrah packages and deals — prices shown in your local currency."
+      />
 
-      <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {items.length === 0 && (
-          <p className="col-span-full text-center text-sm text-ink-400 dark:text-white/60">
-            No packages available yet. Check back soon or contact us for custom Umrah packages.
-          </p>
-        )}
-        {items.map((p) => (
-          <div
-            key={p.id}
-            className="rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-800"
-          >
-            {p.type === "deal" && (
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-gold-500">Deal</p>
+      <section className="bg-cream py-16 dark:bg-ink-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {items.length === 0 && (
+              <p className="col-span-full text-center text-sm text-ink-400 dark:text-white/60">
+                No packages available yet. Check back soon or contact us for custom Umrah packages.
+              </p>
             )}
-            <h2 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{p.title}</h2>
-            <p className="mt-2 text-sm text-ink-400 dark:text-white/60">{p.summary}</p>
-            <p className="mt-4 text-sm font-medium text-maroon-500">
-              {p.nights} nights{" "}
-              {p.priceFrom != null && (
-                <>
-                  · <PriceFrom amountGbp={p.priceFrom} />
-                </>
-              )}
-            </p>
-            <Button size="sm" className="mt-4 w-full" asChild>
-              <Link href={`/umrah-packages/${p.slug}`}>View Package</Link>
-            </Button>
+            {items.map((p) => (
+              <div
+                key={p.id}
+                className="rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-800"
+              >
+                {p.type === "deal" && (
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-gold-500">Deal</p>
+                )}
+                <h2 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{p.title}</h2>
+                <p className="mt-2 text-sm text-ink-400 dark:text-white/60">{p.summary}</p>
+                <p className="mt-4 text-sm font-medium text-maroon-500">
+                  {p.nights} nights{" "}
+                  {p.priceFrom != null && (
+                    <>
+                      · <PriceFrom amountGbp={p.priceFrom} />
+                    </>
+                  )}
+                </p>
+                <Button size="sm" className="mt-4 w-full" asChild>
+                  <Link href={`/umrah-packages/${p.slug}`}>View Package</Link>
+                </Button>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
