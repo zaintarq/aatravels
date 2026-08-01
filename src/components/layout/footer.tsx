@@ -3,6 +3,7 @@ import { Facebook, Instagram } from "lucide-react";
 import { StarDivider } from "@/components/ui/star-divider";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SOCIAL_LINKS } from "@/lib/social";
+import { CONTACT_EMAIL, CONTACT_PHONES } from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -75,6 +76,20 @@ export function Footer() {
           </div>
         </div>
         <StarDivider className="my-10 opacity-60" />
+        <div className="mb-8 space-y-1 text-sm leading-relaxed text-white/75">
+          {CONTACT_PHONES.map((phone) => (
+            <p key={phone.href}>
+              <a href={phone.href} className="hover:text-white">
+                {phone.display}
+              </a>
+            </p>
+          ))}
+          <p>
+            <a href={CONTACT_EMAIL.href} className="hover:text-white">
+              {CONTACT_EMAIL.display}
+            </a>
+          </p>
+        </div>
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-white/50 sm:flex-row">
           <p>&copy; {new Date().getFullYear()} AA Travel Group. All rights reserved.</p>
           <p>Registered Travel Company &mdash; England &amp; Wales</p>
