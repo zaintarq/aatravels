@@ -37,7 +37,10 @@ const services = [
     icon: Plane,
     title: "Air Tickets",
     desc: "Competitive fares sourced through trusted airline and supplier networks.",
-    image: img4,
+    image: {
+      src: "/images/air-tickets-promo.png",
+      alt: "AA Travel Group air tickets and flights",
+    },
   },
   {
     icon: Sparkles,
