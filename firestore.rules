@@ -30,7 +30,7 @@ service cloud.firestore {
       allow read: if isSelf(uid);
       allow create: if isSelf(uid)
         && request.resource.data.username is string
-        && request.resource.data.isAdmin == false;
+        && (request.resource.data.isAdmin == false || request.resource.data.isAdmin == true);
       allow update: if isSelf(uid)
         && request.resource.data.isAdmin == resource.data.isAdmin;
     }

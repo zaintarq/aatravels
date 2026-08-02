@@ -31,7 +31,7 @@ export type AuthUser = {
 type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
-  signUp: (username: string, email: string, password: string) => Promise<void>;
+  signUp: (username: string, email: string, password: string, asAdmin?: boolean) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   getIdToken: () => Promise<string | null>;
@@ -145,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsub();
   }, [applyUser]);
 
-  const signUp = useCallback(async (username: string, email: string, password: string) => {
+  const signUp = useCallback(async (username: string, email: string, password: string, asAdmin = false) => {
     const cleaned = username.trim().toLowerCase().replace(/\s+/g, "");
     if (cleaned.length < 3) throw new Error("Username must be at least 3 characters");
 
@@ -162,16 +162,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: cred.user.uid,
       username: cleaned,
       email: email.trim().toLowerCase(),
-      isAdmin: false,
+      isAdmin: asAdmin,
       createdAt: new Date().toISOString(),
     });
     await setDoc(usernameRef, { uid: cred.user.uid });
+
+    if (asAdmin) {
+      const idToken = await cred.user.getIdToken(true);
+      await syncAdminSession(idToken, true).catch(() => false);
+    }
 
     setUser({
       uid: cred.user.uid,
       email: cred.user.email || email,
       username: cleaned,
-      isAdmin: false,
+      isAdmin: asAdmin,
     });
   }, []);
 
