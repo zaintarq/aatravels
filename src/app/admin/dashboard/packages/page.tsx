@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
 import { getClientDb } from "@/lib/firebase/client";
+import { uploadPackageImage } from "@/lib/firebase/upload-package-image";
 
 type Row = {
   id: string;
@@ -17,6 +19,7 @@ type Row = {
   nights: number;
   priceFrom?: number;
   summary: string;
+  imageUrl?: string;
 };
 
 function slugify(value: string) {
@@ -38,6 +41,8 @@ export default function AdminPackagesPage() {
   const [inclusions, setInclusions] = useState("");
   const [exclusions, setExclusions] = useState("");
   const [city, setCity] = useState("MAKKAH,MADINAH");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -55,6 +60,7 @@ export default function AdminPackagesPage() {
           nights: Number(data.nights || 0),
           priceFrom: data.priceFrom ? Number(data.priceFrom) : undefined,
           summary: String(data.summary || ""),
+          imageUrl: data.imageUrl ? String(data.imageUrl) : undefined,
         };
       })
     );
@@ -68,12 +74,23 @@ export default function AdminPackagesPage() {
     if (user?.isAdmin) load().catch(() => undefined);
   }, [user, loading, router]);
 
+  function onImageChange(file: File | null) {
+    setImageFile(file);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(file ? URL.createObjectURL(file) : null);
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!user?.isAdmin) return;
     setSaving(true);
     setError("");
     try {
+      let imageUrl: string | null = null;
+      if (imageFile) {
+        imageUrl = await uploadPackageImage(imageFile, user.uid);
+      }
+
       await addDoc(collection(getClientDb(), "packages"), {
         title: title.trim(),
         slug: slugify(title.trim()) || `pkg-${Date.now()}`,
@@ -85,6 +102,7 @@ export default function AdminPackagesPage() {
         priceFrom: priceFrom ? Number(priceFrom) : null,
         inclusions: inclusions.trim(),
         exclusions: exclusions.trim() || null,
+        imageUrl,
         active: true,
         createdAt: new Date().toISOString(),
         createdBy: user.uid,
@@ -95,6 +113,7 @@ export default function AdminPackagesPage() {
       setPriceFrom("");
       setInclusions("");
       setExclusions("");
+      onImageChange(null);
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save package");
@@ -170,6 +189,21 @@ export default function AdminPackagesPage() {
             </Select>
           </div>
           <div className="sm:col-span-2">
+            <Label htmlFor="image">Package image</Label>
+            <Input
+              id="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={(e) => onImageChange(e.target.files?.[0] ?? null)}
+            />
+            <p className="mt-1 text-xs text-ink-400">Optional. JPG, PNG or WebP up to 5 MB. Stored in Firebase.</p>
+            {imagePreview && (
+              <div className="relative mt-3 h-40 w-full overflow-hidden rounded-xl border border-ink-900/10 dark:border-white/10">
+                <Image src={imagePreview} alt="Preview" fill className="object-cover" unoptimized />
+              </div>
+            )}
+          </div>
+          <div className="sm:col-span-2">
             <Label htmlFor="summary">Short summary</Label>
             <Input id="summary" required value={summary} onChange={(e) => setSummary(e.target.value)} />
           </div>
@@ -200,6 +234,11 @@ export default function AdminPackagesPage() {
             key={r.id}
             className="flex items-center justify-between gap-3 rounded-lg border border-ink-900/10 px-4 py-3 dark:border-white/10"
           >
+            {r.imageUrl && (
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
+                <Image src={r.imageUrl} alt={r.title} fill className="object-cover" sizes="64px" />
+              </div>
+            )}
             <div className="flex-1">
               <p className="font-medium text-ink-900 dark:text-white">{r.title}</p>
               <p className="text-xs text-ink-400">

@@ -4,6 +4,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+      { protocol: "https", hostname: "aatravels-ef4bc.firebasestorage.app" },
     ],
   },
   eslint: { ignoreDuringBuilds: false },

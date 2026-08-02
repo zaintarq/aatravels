@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useParams, notFound } from "next/navigation";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import { whatsappLink } from "@/lib/utils";
@@ -18,6 +19,7 @@ type Pkg = {
   inclusions?: string;
   exclusions?: string | null;
   priceFrom?: number | null;
+  imageUrl?: string | null;
 };
 
 export function PackageDetailClient() {
@@ -47,6 +49,7 @@ export function PackageDetailClient() {
           inclusions: data.inclusions ? String(data.inclusions) : undefined,
           exclusions: data.exclusions ? String(data.exclusions) : null,
           priceFrom: data.priceFrom != null ? Number(data.priceFrom) : null,
+          imageUrl: data.imageUrl ? String(data.imageUrl) : null,
         });
       })
       .catch(() => setPkg(null));
@@ -59,6 +62,11 @@ export function PackageDetailClient() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+      {pkg.imageUrl && (
+        <div className="relative mb-10 aspect-[16/10] w-full overflow-hidden rounded-2xl border border-ink-900/10 dark:border-white/10">
+          <Image src={pkg.imageUrl} alt={pkg.title} fill className="object-cover" priority sizes="(max-width: 896px) 100vw, 896px" />
+        </div>
+      )}
       <p className="text-xs font-semibold uppercase tracking-[0.3em] text-maroon-500">{pkg.nights} Night Package</p>
       <h1 className="mt-2 font-display text-4xl font-semibold text-ink-900 dark:text-white">{pkg.title}</h1>
       {pkg.priceFrom != null && (

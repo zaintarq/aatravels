@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ type PackageCard = {
   nights: number;
   priceFrom?: number | null;
   type?: string;
+  imageUrl?: string | null;
 };
 
 export default function PackagesPage() {
@@ -36,6 +38,7 @@ export default function PackagesPage() {
               nights: Number(data.nights || 0),
               priceFrom: data.priceFrom != null ? Number(data.priceFrom) : null,
               type: String(data.type || "package"),
+              imageUrl: data.imageUrl ? String(data.imageUrl) : null,
             };
           })
           .filter(Boolean) as PackageCard[];
@@ -64,24 +67,41 @@ export default function PackagesPage() {
             {items.map((p) => (
               <div
                 key={p.id}
-                className="rounded-2xl border border-ink-900/10 bg-white p-6 dark:border-white/10 dark:bg-ink-800"
+                className="group overflow-hidden rounded-2xl border border-ink-900/10 bg-white dark:border-white/10 dark:bg-ink-800"
               >
-                {p.type === "deal" && (
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-gold-500">Deal</p>
-                )}
-                <h2 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{p.title}</h2>
-                <p className="mt-2 text-sm text-ink-400 dark:text-white/60">{p.summary}</p>
-                <p className="mt-4 text-sm font-medium text-maroon-500">
-                  {p.nights} nights{" "}
-                  {p.priceFrom != null && (
-                    <>
-                      · <PriceFrom amountGbp={p.priceFrom} />
-                    </>
+                <div className="relative h-52 w-full overflow-hidden bg-ink-900/5">
+                  {p.imageUrl ? (
+                    <Image
+                      src={p.imageUrl}
+                      alt={p.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-xs uppercase tracking-widest text-ink-400">
+                      AA Travel Group
+                    </div>
                   )}
-                </p>
-                <Button size="sm" className="mt-4 w-full" asChild>
-                  <Link href={`/umrah-packages/${p.slug}`}>View Package</Link>
-                </Button>
+                </div>
+                <div className="p-6">
+                  {p.type === "deal" && (
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-gold-500">Deal</p>
+                  )}
+                  <h2 className="font-display text-lg font-semibold text-ink-900 dark:text-white">{p.title}</h2>
+                  <p className="mt-2 text-sm text-ink-400 dark:text-white/60">{p.summary}</p>
+                  <p className="mt-4 text-sm font-medium text-maroon-500">
+                    {p.nights} nights{" "}
+                    {p.priceFrom != null && (
+                      <>
+                        · <PriceFrom amountGbp={p.priceFrom} />
+                      </>
+                    )}
+                  </p>
+                  <Button size="sm" className="mt-4 w-full" asChild>
+                    <Link href={`/umrah-packages/${p.slug}`}>View Package</Link>
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

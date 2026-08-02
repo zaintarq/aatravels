@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 import { firebasePublicConfig } from "@/lib/firebase/public-config";
 
 export function isFirebaseConfigured(): boolean {
@@ -17,6 +18,7 @@ function getFirebaseApp(): FirebaseApp {
 
 let authInstance: Auth | undefined;
 let dbInstance: Firestore | undefined;
+let storageInstance: FirebaseStorage | undefined;
 
 /** Lazy Auth — do not call during SSR/module import. */
 export function getClientAuth(): Auth {
@@ -28,4 +30,10 @@ export function getClientAuth(): Auth {
 export function getClientDb(): Firestore {
   if (!dbInstance) dbInstance = getFirestore(getFirebaseApp());
   return dbInstance;
+}
+
+/** Lazy Storage — do not call during SSR/module import. */
+export function getClientStorage(): FirebaseStorage {
+  if (!storageInstance) storageInstance = getStorage(getFirebaseApp());
+  return storageInstance;
 }
