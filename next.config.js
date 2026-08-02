@@ -5,7 +5,7 @@ const nextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "firebasestorage.googleapis.com" },
-      { protocol: "https", hostname: "aatravels-ef4bc.firebasestorage.app" },
+      { protocol: "https", hostname: "aa-travel-group.firebasestorage.app" },
     ],
   },
   eslint: { ignoreDuringBuilds: false },

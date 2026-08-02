@@ -31,7 +31,6 @@ service cloud.firestore {
       allow create: if isSelf(uid)
         && request.resource.data.username is string
         && request.resource.data.isAdmin == false;
-      // Users cannot self-promote; owners set isAdmin in Console
       allow update: if isSelf(uid)
         && request.resource.data.isAdmin == resource.data.isAdmin;
     }
@@ -46,17 +45,17 @@ service cloud.firestore {
 
     match /enquiries/{id} {
       allow create: if true;
-      allow read, update, delete: if isAdmin();
+      allow read, update: if false;
     }
 
     match /contacts/{id} {
       allow create: if true;
-      allow read, update, delete: if isAdmin();
+      allow read, update: if false;
     }
 
     match /travelAgents/{id} {
       allow create: if true;
-      allow read, update, delete: if isAdmin();
+      allow read, update: if false;
     }
 
     match /reviews/{id} {
@@ -91,7 +90,6 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // Used by Firebase Extension: "Trigger Email from Firestore"
     match /mail/{id} {
       allow create: if true;
       allow read, update, delete: if false;
