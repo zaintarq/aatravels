@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
@@ -51,15 +50,8 @@ export default function LoginPage() {
     <div className="relative flex min-h-[calc(100vh-5rem)] items-center justify-center px-4 py-16">
       <div className="absolute inset-0 bg-gradient-to-br from-maroon-50 via-white to-ink-50 dark:from-ink-900 dark:via-ink-900 dark:to-maroon-950" />
       <div className="relative w-full max-w-md">
-        <div className="mb-8 flex flex-col items-center text-center">
-          <Image
-            src="/images/aa-travel-group-logo.png"
-            alt="AA Travel Group"
-            width={120}
-            height={120}
-            className="h-20 w-auto object-contain"
-          />
-          <h1 className="mt-6 font-display text-3xl font-semibold text-ink-900 dark:text-white">Welcome back</h1>
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-3xl font-semibold text-ink-900 dark:text-white">Welcome back</h1>
           <p className="mt-2 text-sm text-ink-400 dark:text-white/60">
             Sign in with your email. Staff: set <code className="text-xs">isAdmin</code> to{" "}
             <strong>true</strong> (boolean) on your user doc in Firestore, then sign in again.

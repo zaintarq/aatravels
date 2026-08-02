@@ -50,7 +50,7 @@ const services = [
     title: "Customised Packages",
     desc: "Bespoke itineraries built around your dates, budget and group size.",
     image: {
-      src: "/images/customised-packages.png",
+      src: "/images/customised-packages.jpg",
       alt: "Customised Umrah packages with AA Travel Group",
     },
   },

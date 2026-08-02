@@ -44,7 +44,7 @@ export const sitePromoImages = [
     alt: "AA Travel Group air tickets and flights",
   },
   {
-    src: "/images/customised-packages.png",
+    src: "/images/customised-packages.jpg",
     alt: "Customised Umrah packages with AA Travel Group",
   },
   {
