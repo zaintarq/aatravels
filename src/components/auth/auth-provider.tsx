@@ -17,9 +17,13 @@ import {
   updateProfile,
   type User,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { getClientAuth, getClientDb, isFirebaseConfigured } from "@/lib/firebase/client";
-import { parseIsAdmin } from "@/lib/firebase/is-admin";
+import {
+  ensureUserProfile,
+  formatFirestoreError,
+  isAdminBootstrapEnabled,
+} from "@/lib/firebase/ensure-profile";
 
 export type AuthUser = {
   uid: string;
@@ -39,103 +43,6 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
-function allowAdminBootstrap(): boolean {
-  return process.env.NEXT_PUBLIC_ALLOW_ADMIN_SIGNUP === "true";
-}
-
-function deriveUsername(firebaseUser: User): string {
-  const fromDisplay = firebaseUser.displayName?.trim().toLowerCase().replace(/\s+/g, "") || "";
-  if (fromDisplay.length >= 3) return fromDisplay;
-  const fromEmail =
-    firebaseUser.email?.split("@")[0]?.toLowerCase().replace(/[^a-z0-9]/g, "") || "";
-  if (fromEmail.length >= 3) return fromEmail;
-  return `user${firebaseUser.uid.slice(0, 8)}`;
-}
-
-async function ensureUserDocument(
-  firebaseUser: User,
-  options: { asAdmin?: boolean; createIfMissing?: boolean } = {}
-): Promise<{ username: string; isAdmin: boolean }> {
-  const db = getClientDb();
-  const uid = firebaseUser.uid;
-  const userRef = doc(db, "users", uid);
-  const snap = await getDoc(userRef);
-
-  if (snap.exists()) {
-    const data = snap.data() as { username?: string; isAdmin?: unknown };
-    return {
-      username: data.username || deriveUsername(firebaseUser),
-      isAdmin: parseIsAdmin(data.isAdmin),
-    };
-  }
-
-  const shouldCreate =
-    options.createIfMissing ?? (options.asAdmin === true || allowAdminBootstrap());
-  if (!shouldCreate) {
-    return {
-      username: firebaseUser.displayName || deriveUsername(firebaseUser),
-      isAdmin: false,
-    };
-  }
-
-  const asAdmin = options.asAdmin ?? allowAdminBootstrap();
-  const username = deriveUsername(firebaseUser);
-
-  await setDoc(userRef, {
-    uid,
-    username,
-    email: (firebaseUser.email || "").toLowerCase(),
-    isAdmin: asAdmin,
-    createdAt: new Date().toISOString(),
-  });
-
-  const usernameRef = doc(db, "usernames", username);
-  const usernameSnap = await getDoc(usernameRef);
-  if (!usernameSnap.exists()) {
-    await setDoc(usernameRef, { uid }).catch(() => undefined);
-  }
-
-  return { username, isAdmin: asAdmin };
-}
-
-function formatFirestoreError(err: unknown): string {
-  const message = err instanceof Error ? err.message : String(err);
-  if (message.includes("permission-denied") || message.includes("Missing or insufficient permissions")) {
-    return "Firestore blocked the write. Create the Firestore database and publish firestore.rules from the repo, then sign in again.";
-  }
-  if (message.includes("not-found") || message.includes("Cloud Firestore API has not been used")) {
-    return "Firestore is not set up yet. In Firebase Console go to Firestore Database and click Create database, then sign in again.";
-  }
-  return message.replace("Firebase: ", "").trim();
-}
-
-async function fetchProfile(firebaseUser: User) {
-  const snap = await getDoc(doc(getClientDb(), "users", firebaseUser.uid));
-  if (snap.exists()) {
-    const data = snap.data() as { username?: string; isAdmin?: unknown };
-    return {
-      username: data.username || deriveUsername(firebaseUser),
-      isAdmin: parseIsAdmin(data.isAdmin),
-    };
-  }
-
-  if (!allowAdminBootstrap()) {
-    return {
-      username: firebaseUser.displayName || deriveUsername(firebaseUser),
-      isAdmin: false,
-    };
-  }
-
-  try {
-    return await ensureUserDocument(firebaseUser, {
-      createIfMissing: true,
-      asAdmin: true,
-    });
-  } catch (err) {
-    throw new Error(formatFirestoreError(err));
-  }
-}
 
 async function syncAdminSession(idToken: string, isAdmin: boolean): Promise<boolean> {
   if (!isAdmin) {
@@ -159,12 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const applyUser = useCallback(async (firebaseUser: User) => {
-    const profile = await fetchProfile(firebaseUser);
-    const idToken = await firebaseUser.getIdToken(true);
+  const applyUser = useCallback(async (firebaseUser: User, usernameHint?: string) => {
+    const profile = await ensureUserProfile(firebaseUser, {
+      createIfMissing: isAdminBootstrapEnabled(),
+      asAdmin: isAdminBootstrapEnabled(),
+      username: usernameHint,
+    });
 
-    // Best-effort cookie for /api/admin — do NOT block staff login if this fails.
-    // Dashboard access is gated by Firestore isAdmin on the client + security rules.
+    const idToken = await firebaseUser.getIdToken(true);
     if (profile.isAdmin) {
       await syncAdminSession(idToken, true).catch(() => false);
     } else {
@@ -202,22 +111,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await applyUser(firebaseUser);
       } catch {
-        try {
-          const profile = await fetchProfile(firebaseUser);
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            username: profile.username,
-            isAdmin: profile.isAdmin,
-          });
-        } catch {
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            username: firebaseUser.displayName || "Traveller",
-            isAdmin: false,
-          });
-        }
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email || "",
+          username: firebaseUser.displayName || "Traveller",
+          isAdmin: false,
+        });
       } finally {
         setLoading(false);
       }
@@ -239,33 +138,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
     await updateProfile(cred.user, { displayName: cleaned });
 
-    let profile: { username: string; isAdmin: boolean };
     try {
-      profile = await ensureUserDocument(cred.user, { asAdmin: true, createIfMissing: true });
+      return await applyUser(cred.user, cleaned);
     } catch (err) {
       throw new Error(formatFirestoreError(err));
     }
-
-    if (profile.isAdmin) {
-      const idToken = await cred.user.getIdToken(true);
-      await syncAdminSession(idToken, true).catch(() => false);
-    }
-
-    const nextUser: AuthUser = {
-      uid: cred.user.uid,
-      email: cred.user.email || email,
-      username: profile.username,
-      isAdmin: profile.isAdmin,
-    };
-    setUser(nextUser);
-    return nextUser;
-  }, []);
+  }, [applyUser]);
 
   const signIn = useCallback(
     async (email: string, password: string) => {
       const auth = getClientAuth();
       const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
-      return applyUser(cred.user);
+      try {
+        return await applyUser(cred.user);
+      } catch (err) {
+        throw new Error(formatFirestoreError(err));
+      }
     },
     [applyUser]
   );
@@ -288,8 +176,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshProfile = useCallback(async () => {
     const current = getClientAuth().currentUser;
     if (!current) return;
-    await applyUser(current);
-  }, [applyUser]);
+    await applyUser(current, user?.username);
+  }, [applyUser, user?.username]);
 
   const value = useMemo(
     () => ({ user, loading, signUp, signIn, signOut, getIdToken, refreshProfile }),

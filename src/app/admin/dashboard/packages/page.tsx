@@ -3,12 +3,12 @@
 import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
+import { useAdminAccess } from "@/hooks/use-admin-access";
 import { getClientDb } from "@/lib/firebase/client";
 import { uploadPackageImage } from "@/lib/firebase/upload-package-image";
 
@@ -30,8 +30,8 @@ function slugify(value: string) {
 }
 
 export default function AdminPackagesPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
+  const { ready, error: accessError, retry } = useAdminAccess("/admin/dashboard/packages");
   const [title, setTitle] = useState("");
   const [type, setType] = useState<"package" | "deal">("package");
   const [summary, setSummary] = useState("");
@@ -49,30 +49,29 @@ export default function AdminPackagesPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   async function load() {
-    const snap = await getDocs(query(collection(getClientDb(), "packages"), orderBy("createdAt", "desc")));
-    setRows(
-      snap.docs.map((d) => {
-        const data = d.data();
-        return {
-          id: d.id,
-          title: String(data.title),
-          type: String(data.type || "package"),
-          nights: Number(data.nights || 0),
-          priceFrom: data.priceFrom ? Number(data.priceFrom) : undefined,
-          summary: String(data.summary || ""),
-          imageUrl: data.imageUrl ? String(data.imageUrl) : undefined,
-        };
-      })
-    );
+    const snap = await getDocs(collection(getClientDb(), "packages"));
+    const items = snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        title: String(data.title),
+        type: String(data.type || "package"),
+        nights: Number(data.nights || 0),
+        priceFrom: data.priceFrom ? Number(data.priceFrom) : undefined,
+        summary: String(data.summary || ""),
+        imageUrl: data.imageUrl ? String(data.imageUrl) : undefined,
+        createdAt: String(data.createdAt || ""),
+      };
+    });
+    items.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    setRows(items);
   }
 
   useEffect(() => {
-    if (!loading && (!user || !user.isAdmin)) {
-      router.replace("/login?next=/admin/dashboard/packages");
-      return;
-    }
-    if (user?.isAdmin) load().catch(() => undefined);
-  }, [user, loading, router]);
+    if (ready && user?.isAdmin) load().catch((err) => {
+      setError(err instanceof Error ? err.message : "Could not load packages");
+    });
+  }, [ready, user?.isAdmin]);
 
   function onImageChange(file: File | null) {
     setImageFile(file);
@@ -136,8 +135,23 @@ export default function AdminPackagesPage() {
     }
   }
 
-  if (loading || !user?.isAdmin) {
-    return <p className="p-10 text-center text-sm text-ink-400">Loading…</p>;
+  if (!ready) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-12 text-center">
+        <p className="text-sm text-ink-400">{accessError ? "Could not verify admin access." : "Setting up admin profile…"}</p>
+        {accessError && (
+          <div className="mt-4 space-y-3">
+            <p className="text-sm text-maroon-500">{accessError}</p>
+            <p className="text-xs text-ink-400">
+              In Firebase Console → Firestore → Rules, paste <code>firestore.rules</code> from the repo and click Publish.
+            </p>
+            <Button type="button" size="sm" onClick={retry}>
+              Try again
+            </Button>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -220,7 +234,7 @@ export default function AdminPackagesPage() {
             <Textarea id="exclusions" rows={2} value={exclusions} onChange={(e) => setExclusions(e.target.value)} />
           </div>
         </div>
-        {error && <p className="text-sm text-maroon-500">{error}</p>}
+        {(error || accessError) && <p className="text-sm text-maroon-500">{error || accessError}</p>}
         <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : "Add Package / Deal"}
         </Button>

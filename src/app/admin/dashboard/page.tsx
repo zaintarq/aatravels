@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/components/auth/auth-provider";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAdminAccess } from "@/hooks/use-admin-access";
 import { Button } from "@/components/ui/button";
 
 const cards = [
@@ -15,18 +14,29 @@ const cards = [
 ];
 
 export default function AdminDashboardPage() {
-  const { user, loading, signOut } = useAuth();
-  const router = useRouter();
+  const { user, signOut } = useAuth();
+  const { ready, error: accessError, retry } = useAdminAccess("/admin/dashboard");
 
-  useEffect(() => {
-    if (!loading && (!user || !user.isAdmin)) {
-      router.replace("/login?next=/admin/dashboard");
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user?.isAdmin) {
-    return <p className="p-10 text-center text-sm text-ink-400">Loading…</p>;
+  if (!ready) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-12 text-center">
+        <p className="text-sm text-ink-400">{accessError ? "Could not verify admin access." : "Setting up admin profile…"}</p>
+        {accessError && (
+          <div className="mt-4 space-y-3">
+            <p className="text-sm text-maroon-500">{accessError}</p>
+            <p className="text-xs text-ink-400">
+              In Firebase Console → Firestore → Rules, paste <code>firestore.rules</code> from the repo and click Publish.
+            </p>
+            <Button type="button" size="sm" onClick={retry}>
+              Try again
+            </Button>
+          </div>
+        )}
+      </div>
+    );
   }
+
+  if (!user?.isAdmin) return null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
