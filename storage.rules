@@ -1,9 +1,25 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function adminValue() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+    }
+
     function isAdmin() {
       return request.auth != null
-        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+        && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+        && (
+          adminValue() == true
+          || adminValue() == 1
+          || adminValue() == 'yes'
+          || adminValue() == 'Yes'
+          || adminValue() == 'YES'
+          || adminValue() == 'true'
+          || adminValue() == 'True'
+          || adminValue() == 'TRUE'
+          || adminValue() == '1'
+          || adminValue() == 'y'
+        );
     }
 
     match /packages/{userId}/{fileName} {
