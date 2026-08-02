@@ -38,9 +38,7 @@ export default function LoginPage() {
         router.replace(next?.startsWith("/admin") ? next : "/admin/dashboard");
         return;
       }
-      setError(
-        "Signed in, but admin access is not active yet. Enable Firestore, publish the security rules, then sign in again."
-      );
+      setError("Signed in, but your admin profile was not created. Check the message above or try signing in again.");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Could not sign in";
       setError(
@@ -59,8 +57,8 @@ export default function LoginPage() {
         <div className="mb-8 text-center">
           <h1 className="font-display text-3xl font-semibold text-ink-900 dark:text-white">Welcome back</h1>
           <p className="mt-2 text-sm text-ink-400 dark:text-white/60">
-            Sign in with your email. Staff: set <code className="text-xs">isAdmin</code> to{" "}
-            <strong>true</strong> (boolean) on your user doc in Firestore, then sign in again.
+            Sign in with your email. On first sign-in the app creates your admin profile in Firestore
+            automatically — you only need Firestore enabled and the rules published in Firebase Console.
           </p>
         </div>
 
@@ -106,7 +104,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-400 dark:text-white/60">
-          After setting isAdmin, sign out and sign in again to open Hotels &amp; Packages.
+          If sign-in fails, enable Firestore in Firebase Console and publish <code className="text-xs">firestore.rules</code> from this repo.
         </p>
       </div>
     </div>

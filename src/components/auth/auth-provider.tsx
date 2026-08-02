@@ -99,25 +99,41 @@ async function ensureUserDocument(
   return { username, isAdmin: asAdmin };
 }
 
+function formatFirestoreError(err: unknown): string {
+  const message = err instanceof Error ? err.message : String(err);
+  if (message.includes("permission-denied") || message.includes("Missing or insufficient permissions")) {
+    return "Firestore blocked the write. Create the Firestore database and publish firestore.rules from the repo, then sign in again.";
+  }
+  if (message.includes("not-found") || message.includes("Cloud Firestore API has not been used")) {
+    return "Firestore is not set up yet. In Firebase Console go to Firestore Database and click Create database, then sign in again.";
+  }
+  return message.replace("Firebase: ", "").trim();
+}
+
 async function fetchProfile(firebaseUser: User) {
-  try {
-    return await ensureUserDocument(firebaseUser, {
-      createIfMissing: allowAdminBootstrap(),
-      asAdmin: allowAdminBootstrap(),
-    });
-  } catch {
-    const snap = await getDoc(doc(getClientDb(), "users", firebaseUser.uid));
-    if (snap.exists()) {
-      const data = snap.data() as { username?: string; isAdmin?: unknown };
-      return {
-        username: data.username || deriveUsername(firebaseUser),
-        isAdmin: parseIsAdmin(data.isAdmin),
-      };
-    }
+  const snap = await getDoc(doc(getClientDb(), "users", firebaseUser.uid));
+  if (snap.exists()) {
+    const data = snap.data() as { username?: string; isAdmin?: unknown };
+    return {
+      username: data.username || deriveUsername(firebaseUser),
+      isAdmin: parseIsAdmin(data.isAdmin),
+    };
+  }
+
+  if (!allowAdminBootstrap()) {
     return {
       username: firebaseUser.displayName || deriveUsername(firebaseUser),
       isAdmin: false,
     };
+  }
+
+  try {
+    return await ensureUserDocument(firebaseUser, {
+      createIfMissing: true,
+      asAdmin: true,
+    });
+  } catch (err) {
+    throw new Error(formatFirestoreError(err));
   }
 }
 
@@ -226,10 +242,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let profile: { username: string; isAdmin: boolean };
     try {
       profile = await ensureUserDocument(cred.user, { asAdmin: true, createIfMissing: true });
-    } catch {
-      throw new Error(
-        "Account created in Auth but profile could not be saved. Enable Firestore and publish the security rules, then sign in again."
-      );
+    } catch (err) {
+      throw new Error(formatFirestoreError(err));
     }
 
     if (profile.isAdmin) {
