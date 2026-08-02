@@ -7,6 +7,7 @@ pages_build_output_dir = ".vercel/output/static"
 [vars]
 JWT_SECRET = "4314c65a6485e056506c24bb12a942dcd610decebb8eb7199ebcdc5f82fb4dc4"
 JWT_EXPIRES_IN = "7d"
+NEXT_PUBLIC_ALLOW_ADMIN_SIGNUP = "true"
 NEXT_PUBLIC_SITE_URL = "https://aatravelgroup.co.uk"
 NEXT_PUBLIC_WHATSAPP_NUMBER = "447900007023"
 NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyD0CyoJxPXWfdcZAttQxqIYOiYW1GXdsIU"

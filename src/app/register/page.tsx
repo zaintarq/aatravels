@@ -26,8 +26,8 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
     try {
-      await signUp(username, email, password, true);
-      router.replace("/admin/dashboard");
+      const profile = await signUp(username, email, password, true);
+      router.replace(profile.isAdmin ? "/admin/dashboard" : "/login");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Could not create account";
       setError(

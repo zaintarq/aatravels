@@ -8,7 +8,7 @@ import { Input, Label } from "@/components/ui/input";
 import { useAuth } from "@/components/auth/auth-provider";
 
 export default function LoginPage() {
-  const { signIn, user, loading: authLoading, refreshProfile } = useAuth();
+  const { signIn, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
@@ -33,9 +33,14 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      await signIn(email, password);
-      // Ensure latest Firestore isAdmin + cookie after console edits
-      await refreshProfile();
+      const profile = await signIn(email, password);
+      if (profile.isAdmin) {
+        router.replace(next?.startsWith("/admin") ? next : "/admin/dashboard");
+        return;
+      }
+      setError(
+        "Signed in, but admin access is not active yet. Enable Firestore, publish the security rules, then sign in again."
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : "Could not sign in";
       setError(
